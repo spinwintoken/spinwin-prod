@@ -180,10 +180,12 @@
       form.reset();
     }
 
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      completeSignup(document.getElementById("recaptchaToken").value);
-    });
+    form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    await refreshRecaptchaToken();   // ← REQUIRED FIX
+    completeSignup(document.getElementById("recaptchaToken").value);
+});
+
   </script>
 </body>
 </html>
