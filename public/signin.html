@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sign In - SpinWinToken</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      background:#000;
+      color:#ffd700;
+      font-family: Arial, sans-serif;
+      text-align:center;
+      padding-top:60px;
+      margin:0;
+    }
+    .box {
+      background:#111;
+      padding:40px;
+      border-radius:12px;
+      width:90%;
+      max-width:480px;
+      margin:auto;
+      border:1px solid #ffd700;
+    }
+    input {
+      width:90%;
+      padding:12px;
+      margin-top:12px;
+      border-radius:6px;
+      border:1px solid #ffd700;
+      background:#222;
+      color:#ffd700;
+      font-size:16px;
+    }
+    .btn {
+      margin-top:25px;
+      padding:12px 20px;
+      background:#ffd700;
+      color:#000;
+      font-weight:bold;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:18px;
+      text-decoration:none;
+      display:inline-block;
+    }
+    .btn:hover {
+      background:#e6c200;
+    }
+    p {
+      color:#fff;
+      margin-top:12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <h1>Sign In</h1>
+
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+
+    <button class="btn" onclick="signIn()">Sign In</button>
+
+    <p>
+      <a href="createaccount.html" style="color:#ffd700;">Create Account</a>
+    </p>
+
+    <p id="msg"></p>
+  </div>
+
+  <script>
+    const client = supabase.createClient(
+      "https://zejhbfuuherovlxklrgy.supabase.co",
+      "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
+    );
+
+    async function signIn() {
+      const msg = document.getElementById("msg");
+      msg.textContent = "";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        msg.textContent = "Enter email and password.";
+        return;
+      }
+
+      // Sign in user
+      const { data, error } = await client.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        msg.textContent = "Incorrect email or password.";
+        return;
+      }
+
+      // Generate 6-digit code
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+      // Store code in DB
+      await client
+        .from("UsersSQL")
+        .update({ verifycode: code })
+        .eq("email", email);
+
+      // Send email using Supabase Edge Function
+      await fetch("https://zejhbfuuherovlxklrgy.supabase.co/functions/v1/sendemail", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: email,
+          subject: "Your SpinWinToken Verification Code",
+          message: "Your 6-digit verification code is: " + code
+        })
+      });
+
+      alert("Check your email for the verification code.");
+
+      // Redirect to verifycode.html
+      window.location.href = "verifycode.html?email=" + encodeURIComponent(email);
+    }
+  </script>
+</body>
+</html>
