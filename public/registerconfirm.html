@@ -107,7 +107,7 @@
       const email = session.user.email;
       document.getElementById("emailDisplay").textContent = "Email: " + email;
 
-      // Load original row
+      // Load existing row
       const { data: userRow, error: userErr } = await client
         .from("UsersSQL")
         .select("*")
@@ -125,10 +125,16 @@
         "Referred By: " + referredBy;
 
       // Compute new teammember value
-      const { data: refRows } = await client
+      const { data: refRows, error: refErr } = await client
         .from("UsersSQL")
         .select("teammembers")
         .eq("referred_by", referredBy);
+
+      if (refErr) {
+        msg.textContent = "Error loading team data: " + refErr.message;
+        document.getElementById("signinBtn").style.display = "inline-block";
+        return;
+      }
 
       const teamValues = (refRows || [])
         .map(r => Number(r.teammembers))
@@ -137,28 +143,39 @@
       const maxTeam = teamValues.length > 0 ? Math.max(...teamValues) : 0;
       const newTeamCount = maxTeam + 1;
 
-      // INSERT indicator = 2, teammember = +1 (NO UPDATE)
-      const { error: insertErr } = await client
+      // UPDATE ONLY indicator and teammembers (NO INSERT)
+      const { error: updateErr } = await client
         .from("UsersSQL")
-        .insert({
-          email: email,
-          referred_by: referredBy,
+        .update({
           indicator: 2,
           teammembers: newTeamCount
-        });
+        })
+        .eq("email", email);
 
-      if (insertErr) {
-        msg.textContent = "Insert error: " + insertErr.message;
+      if (updateErr) {
+        msg.textContent = "Update error: " + updateErr.message;
         document.getElementById("signinBtn").style.display = "inline-block";
         return;
       }
 
-      // Display inserted values
+      // Reload updated row to display values
+      const { data: updatedRow, error: updatedErr } = await client
+        .from("UsersSQL")
+        .select("indicator, teammembers")
+        .eq("email", email)
+        .single();
+
+      if (updatedErr || !updatedRow) {
+        msg.textContent = "Error loading updated data.";
+        document.getElementById("signinBtn").style.display = "inline-block";
+        return;
+      }
+
       document.getElementById("indicatorDisplay").textContent =
-        "Indicator: 2";
+        "Indicator: " + updatedRow.indicator;
 
       document.getElementById("teamDisplay").textContent =
-        "Team Member #: " + newTeamCount;
+        "Team Member #: " + updatedRow.teammembers;
 
       msg.textContent = "Your confirmation has been recorded.";
       document.getElementById("signinBtn").style.display = "inline-block";
@@ -168,4 +185,5 @@
   </script>
 </body>
 </html>
+
 
