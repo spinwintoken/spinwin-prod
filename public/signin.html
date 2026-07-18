@@ -103,31 +103,10 @@
         return;
       }
 
-      // Generate 6-digit code
-      const code = Math.floor(100000 + Math.random() * 900000).toString();
-
-      // Store code in DB
-      await client
-        .from("UsersSQL")
-        .update({ verifycode: code })
-        .eq("email", email);
-
-      // Send email using Supabase Edge Function
-      await fetch("https://zejhbfuuherovlxklrgy.supabase.co/functions/v1/sendemail", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: email,
-          subject: "Your SpinWinToken Verification Code",
-          message: "Your 6-digit verification code is: " + code
-        })
-      });
-
-      alert("Check your email for the verification code.");
-
-      // Redirect to verifycode.html
-      window.location.href = "verifycode.html?email=" + encodeURIComponent(email);
+      // SUCCESS → go directly to home.html
+      window.location.href = "home.html?email=" + encodeURIComponent(email);
     }
   </script>
 </body>
 </html>
+
