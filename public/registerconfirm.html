@@ -106,7 +106,7 @@
       const email = session.user.email;
       document.getElementById("emailDisplay").textContent = "Email: " + email;
 
-      // ⭐ Load user row by EMAIL (works with your RLS)
+      // Load user row by EMAIL (works with your RLS)
       const { data: userRow, error: userErr } = await client
         .from("UsersSQL")
         .select("*")
@@ -123,7 +123,7 @@
       document.getElementById("refDisplay").textContent =
         "Referred By: " + referrerCode;
 
-      // ⭐ Get all teammembers for this referrer
+      // Get all teammembers for this referrer
       const { data: refRows } = await client
         .from("UsersSQL")
         .select("teammembers")
@@ -136,7 +136,7 @@
       const maxTeam = teamValues.length > 0 ? Math.max(...teamValues) : 0;
       const newTeamCount = maxTeam + 1;
 
-      // ⭐ Update indicator + teammembers using EMAIL (works with your RLS)
+      // Update indicator + teammembers using EMAIL (works with your RLS)
       const { error: updateErr } = await client
         .from("UsersSQL")
         .update({
@@ -151,7 +151,7 @@
         return;
       }
 
-      // ⭐ Display updated values
+      // Display updated values
       document.getElementById("indicatorDisplay").textContent =
         "Indicator: 2";
       document.getElementById("teamDisplay").textContent =
