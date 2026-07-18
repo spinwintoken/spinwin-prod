@@ -55,7 +55,7 @@
 <body>
   <div class="box">
     <h1>Account Confirmed</h1>
-    <p id="msg">Finalizing your account...</p>
+    <p id="msg">Loading your account...</p>
 
     <p id="emailDisplay" class="out"></p>
     <p id="refDisplay" class="out"></p>
@@ -74,7 +74,7 @@
 
     const client = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    async function finalizeAccount() {
+    async function loadAccount() {
       const msg = document.getElementById("msg");
 
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -107,7 +107,7 @@
       const email = session.user.email;
       document.getElementById("emailDisplay").textContent = "Email: " + email;
 
-      // Load user row BEFORE update
+      // Load original row
       const { data: userRow, error: userErr } = await client
         .from("UsersSQL")
         .select("*")
@@ -120,15 +120,15 @@
         return;
       }
 
-      const referrerCode = userRow.referred_by;
+      const referredBy = userRow.referred_by;
       document.getElementById("refDisplay").textContent =
-        "Referred By: " + referrerCode;
+        "Referred By: " + referredBy;
 
-      // Get all teammembers for this referrer
+      // Compute new teammember value
       const { data: refRows } = await client
         .from("UsersSQL")
         .select("teammembers")
-        .eq("referred_by", referrerCode);
+        .eq("referred_by", referredBy);
 
       const teamValues = (refRows || [])
         .map(r => Number(r.teammembers))
@@ -137,40 +137,35 @@
       const maxTeam = teamValues.length > 0 ? Math.max(...teamValues) : 0;
       const newTeamCount = maxTeam + 1;
 
-      // ⭐ Update indicator + teammembers using EMAIL
-      const { error: updateErr } = await client
+      // INSERT indicator = 2, teammember = +1 (NO UPDATE)
+      const { error: insertErr } = await client
         .from("UsersSQL")
-        .update({
+        .insert({
+          email: email,
+          referred_by: referredBy,
           indicator: 2,
           teammembers: newTeamCount
-        })
-        .eq("email", email);
+        });
 
-      if (updateErr) {
-        msg.textContent = "Update error: " + updateErr.message;
+      if (insertErr) {
+        msg.textContent = "Insert error: " + insertErr.message;
         document.getElementById("signinBtn").style.display = "inline-block";
         return;
       }
 
-      // Load updated row
-      const { data: updatedRow } = await client
-        .from("UsersSQL")
-        .select("*")
-        .eq("email", email)
-        .single();
-
-      // Display updated values
+      // Display inserted values
       document.getElementById("indicatorDisplay").textContent =
-        "Indicator (updated): " + updatedRow.indicator;
+        "Indicator: 2";
 
       document.getElementById("teamDisplay").textContent =
-        "Team Member (updated): " + updatedRow.teammembers;
+        "Team Member #: " + newTeamCount;
 
-      msg.textContent = "Your account has been updated successfully!";
+      msg.textContent = "Your confirmation has been recorded.";
       document.getElementById("signinBtn").style.display = "inline-block";
     }
 
-    finalizeAccount();
+    loadAccount();
   </script>
 </body>
 </html>
+
