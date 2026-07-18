@@ -55,10 +55,11 @@
 <body>
   <div class="box">
     <h1>Account Confirmed</h1>
-    <p id="msg">Finalizing your account...</p>
+    <p id="msg">Loading your account...</p>
 
     <p id="emailDisplay" class="out"></p>
     <p id="refDisplay" class="out"></p>
+
     <p id="indicatorDisplay" class="out"></p>
     <p id="teamDisplay" class="out"></p>
 
@@ -73,9 +74,10 @@
 
     const client = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    async function finalizeAccount() {
+    async function loadAccount() {
       const msg = document.getElementById("msg");
 
+      // Read tokens from URL
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const queryParams = new URLSearchParams(window.location.search);
 
@@ -85,11 +87,12 @@
         hashParams.get("refresh_token") || queryParams.get("refresh_token");
 
       if (!access_token || !refresh_token) {
-        msg.textContent = "Invalid or expired confirmation link. Please sign in.";
+        msg.textContent = "Invalid or expired confirmation link.";
         document.getElementById("signinBtn").style.display = "inline-block";
         return;
       }
 
+      // Set session
       await client.auth.setSession({
         access_token,
         refresh_token
@@ -98,7 +101,7 @@
       const { data: { session } } = await client.auth.getSession();
 
       if (!session) {
-        msg.textContent = "Unable to load your session. Please sign in.";
+        msg.textContent = "Unable to load your session.";
         document.getElementById("signinBtn").style.display = "inline-block";
         return;
       }
@@ -106,7 +109,7 @@
       const email = session.user.email;
       document.getElementById("emailDisplay").textContent = "Email: " + email;
 
-      // Load user row by EMAIL (works with your RLS)
+      // ⭐ Load user row by EMAIL (display only)
       const { data: userRow, error: userErr } = await client
         .from("UsersSQL")
         .select("*")
@@ -114,56 +117,29 @@
         .single();
 
       if (userErr || !userRow) {
-        msg.textContent = "User lookup error.";
+        msg.textContent = "User record not found.";
         document.getElementById("signinBtn").style.display = "inline-block";
         return;
       }
 
-      const referrerCode = userRow.referred_by;
+      // ⭐ Display values
       document.getElementById("refDisplay").textContent =
-        "Referred By: " + referrerCode;
+        "Referred By: " + userRow.referred_by;
 
-      // Get all teammembers for this referrer
-      const { data: refRows } = await client
-        .from("UsersSQL")
-        .select("teammembers")
-        .eq("referred_by", referrerCode);
-
-      const teamValues = (refRows || [])
-        .map(r => Number(r.teammembers))
-        .filter(v => !Number.isNaN(v));
-
-      const maxTeam = teamValues.length > 0 ? Math.max(...teamValues) : 0;
-      const newTeamCount = maxTeam + 1;
-
-      // Update indicator + teammembers using EMAIL (works with your RLS)
-      const { error: updateErr } = await client
-        .from("UsersSQL")
-        .update({
-          indicator: 2,
-          teammembers: newTeamCount
-        })
-        .eq("email", email);
-
-      if (updateErr) {
-        msg.textContent = "Update error: " + updateErr.message;
-        document.getElementById("signinBtn").style.display = "inline-block";
-        return;
-      }
-
-      // Display updated values
       document.getElementById("indicatorDisplay").textContent =
-        "Indicator: 2";
-      document.getElementById("teamDisplay").textContent =
-        "Team Member #: " + newTeamCount;
+        "Indicator: " + userRow.indicator;
 
-      msg.textContent = "Your email has been verified successfully!";
+      document.getElementById("teamDisplay").textContent =
+        "Team Member #: " + userRow.teammembers;
+
+      msg.textContent = "Your account has been loaded.";
       document.getElementById("signinBtn").style.display = "inline-block";
     }
 
-    finalizeAccount();
+    loadAccount();
   </script>
 </body>
 </html>
+
 
 
