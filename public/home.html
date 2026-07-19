@@ -27,6 +27,9 @@
   .logo-row img {
     width:70px;
     height:70px;
+    object-fit:contain;
+    background:#222;
+    border-radius:10px;
   }
   .logo-title {
     font-size:28px;
@@ -72,11 +75,12 @@
     width:90%;
     max-width:420px;
 
-    /* Deep 3D */
+    /* Deep 3D from top */
     box-shadow:
-      8px 8px 18px rgba(0,0,0,0.8),
-      -8px -8px 18px rgba(255,255,255,0.08),
-      inset 0px 0px 12px rgba(255,255,255,0.25);
+      inset 0px 4px 10px rgba(255,255,255,0.4),
+      inset 0px -4px 10px rgba(0,0,0,0.5),
+      10px 10px 20px rgba(0,0,0,0.9),
+      -10px -10px 20px rgba(255,255,255,0.05);
   }
 
   /* COLORS */
@@ -152,10 +156,10 @@
     width:100%;
     display:flex;
     justify-content:center;
-    gap:28px;
+    gap:40px; /* MORE SPACING */
   }
   .icon-item {
-    font-size:20px;
+    font-size:22px;
     opacity:0.9;
   }
 </style>
@@ -205,7 +209,7 @@
     <h3 id="h3"></h3>
     <h4 id="h4"></h4>
     <p id="p1"></p>
-    <button class="popup-close" onclick="closePage()">❌ Close</button>
+    <button class="popup-close" onclick="closePage()">✖ Close</button>
   </div>
 </div>
 
@@ -213,7 +217,7 @@
 <div class="icon-row">
   <div class="icon-item">🏠</div>
   <div class="icon-item">🏅</div>
-  <div class="icon-item">🍪</div>
+  <div class="icon-item">🎯</div> <!-- NEW BINGO ICON -->
   <div class="icon-item">⬡</div>
   <div class="icon-item">👤</div>
 </div>
@@ -273,6 +277,7 @@
 
 </body>
 </html>
+
 
 
 
