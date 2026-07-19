@@ -13,7 +13,7 @@
     margin:0;
     padding:0;
     text-align:center;
-    padding-bottom:80px;
+    padding-bottom:90px;
   }
 
   /* LOGO + TITLE */
@@ -58,23 +58,33 @@
     font-size:14px;
   }
 
-  /* VERTICAL BUTTON LIST (FIRST SCREENSHOT COLORS) */
+  /* DEEP 3D BRICKS */
   .brick {
-    width:90%;
-    max-width:420px;
+    flex:1;
     margin:15px auto;
     padding:25px;
-    border-radius:12px;
+    border-radius:14px;
     font-size:22px;
     font-weight:bold;
     cursor:pointer;
     color:#000;
     text-align:center;
-    box-shadow:0px 6px 12px rgba(0,0,0,0.35);
+    width:90%;
+    max-width:420px;
+
+    /* Deep 3D */
+    box-shadow:
+      8px 8px 18px rgba(0,0,0,0.8),
+      -8px -8px 18px rgba(255,255,255,0.08),
+      inset 0px 0px 12px rgba(255,255,255,0.25);
   }
 
+  /* COLORS */
   .brick-big {
     background:linear-gradient(145deg, #f7d44c, #fce88a, #fff4d1);
+  }
+  .brick-charity {
+    background:linear-gradient(145deg, #fff4d1, #ffe9a3, #f7d44c);
   }
   .brick-token {
     background:linear-gradient(145deg, #ff5a5a, #ff8a8a, #ffd1d1);
@@ -89,6 +99,16 @@
     background:linear-gradient(145deg, #c46aff, #d98aff, #f4d1ff);
   }
 
+  /* FIRST ROW SPLIT INTO TWO */
+  .brick-row-two {
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    width:90%;
+    max-width:420px;
+    margin:20px auto;
+  }
+
   /* POPUP */
   .popup {
     position:fixed;
@@ -101,7 +121,7 @@
     align-items:center;
     flex-direction:column;
     padding:20px;
-    text-align:center;
+    text-align:left;
     backdrop-filter:blur(4px);
     z-index:999;
   }
@@ -111,20 +131,20 @@
     border-radius:14px;
     padding:25px;
     width:85%;
-    max-width:380px;
+    max-width:420px;
   }
   .popup-close {
     margin-top:20px;
-    font-size:18px;
-    padding:10px 18px;
+    font-size:16px;
+    padding:8px 14px;
     background:#ffd700;
     color:#000;
     border:none;
-    border-radius:8px;
+    border-radius:6px;
     cursor:pointer;
   }
 
-  /* BOTTOM ICON ROW (SECOND SCREENSHOT ICONS) */
+  /* BOTTOM NAV ICONS */
   .icon-row {
     position:fixed;
     bottom:10px;
@@ -132,10 +152,11 @@
     width:100%;
     display:flex;
     justify-content:center;
-    gap:18px;
+    gap:28px;
   }
   .icon-item {
-    font-size:22px;
+    font-size:20px;
+    opacity:0.9;
   }
 </style>
 </head>
@@ -159,32 +180,32 @@
   </div>
 </div>
 
+<!-- FIRST ROW: TWO BRICKS -->
+<div class="brick-row-two">
+  <div class="brick brick-big" onclick="openPage('SPIN WIN TOKEN')">
+    SPIN WIN TOKEN
+  </div>
+
+  <div class="brick brick-charity" onclick="openPage('Charity')">
+    Charity<br><small>Give & Receive</small>
+  </div>
+</div>
+
 <!-- VERTICAL BUTTON LIST -->
-<div class="brick brick-big" onclick="openPage('SPIN WIN TOKEN')">
-  SPIN WIN TOKEN
-</div>
-
-<div class="brick brick-token" onclick="openPage('Token')">
-  Token
-</div>
-
-<div class="brick brick-spinwheel" onclick="openPage('Spin Wheel')">
-  Spin Wheel
-</div>
-
-<div class="brick brick-bingo" onclick="openPage('Bingo')">
-  Bingo
-</div>
-
-<div class="brick brick-profile" onclick="openPage('Profile')">
-  Profile
-</div>
+<div class="brick brick-token" onclick="openPage('Token')">Token</div>
+<div class="brick brick-spinwheel" onclick="openPage('Spin Wheel')">Spin Wheel</div>
+<div class="brick brick-bingo" onclick="openPage('Bingo')">Bingo</div>
+<div class="brick brick-profile" onclick="openPage('Profile')">Profile</div>
 
 <!-- POPUP PAGE -->
 <div id="popup" class="popup">
   <div class="popup-box">
-    <div id="popup-text"></div>
-    <button class="popup-close" onclick="closePage()">Close</button>
+    <h1 id="h1"></h1>
+    <h2 id="h2"></h2>
+    <h3 id="h3"></h3>
+    <h4 id="h4"></h4>
+    <p id="p1"></p>
+    <button class="popup-close" onclick="closePage()">❌ Close</button>
   </div>
 </div>
 
@@ -198,13 +219,17 @@
 </div>
 
 <script>
-  function go(page) {
-    window.location.href = page;
-  }
-
   function openPage(name) {
-    document.getElementById("popup-text").textContent = name + " Page";
     document.getElementById("popup").style.display = "flex";
+
+    document.getElementById("h1").textContent = name;
+    document.getElementById("h2").textContent = "Section Header 2";
+    document.getElementById("h3").textContent = "Section Header 3";
+    document.getElementById("h4").textContent = "Section Header 4";
+
+    document.getElementById("p1").textContent =
+      "This is a paragraph of information for the " + name +
+      " section. You can place any text here to explain features, rules, or instructions.";
   }
 
   function closePage() {
@@ -248,6 +273,7 @@
 
 </body>
 </html>
+
 
 
 
