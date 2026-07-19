@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .block {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .copy-btn {
+            background: #007bff;
+            color: #fff;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background: #0056b3;
+        }
+
+        .signout {
+            background: #d9534f;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+        }
+
+        .signout:hover {
+            background: #c9302c;
+        }
+    </style>
+
+    <script>
+        function copyLink() {
+            const link = document.getElementById("inviteLink").innerText;
+            navigator.clipboard.writeText(link);
+            alert("Invitation link copied!");
+        }
+    </script>
+</head>
+
+<body>
+
+    <!-- 1st Block -->
+    <div class="block">
+        <div class="title">Your Referral Information</div>
+
+        <p><strong>User ID / Referral Code:</strong> 
+            <span id="referralCode">{{referralcode_from_DB}}</span>
+        </p>
+
+        <p><strong>Your Invitation Link:</strong></p>
+        <p id="inviteLink">https://spinwintoken.com?invite={{referralcode_from_DB}}</p>
+
+        <button class="copy-btn" onclick="copyLink()">Copy</button>
+    </div>
+
+    <!-- 2nd Block -->
+    <div class="block">
+        <div class="title">Team Members</div>
+
+        <p><strong>Number of Team Members:</strong> 
+            <span id="teamMembers">{{teammembers_from_DB}}</span>
+        </p>
+
+        <p><strong>Team Tokens Purchased:</strong> 
+            <span id="tokensPurchased">{{tokens_purchased_from_DB}}</span>
+        </p>
+
+        <p><strong>Token Available for Purchase:</strong> 
+            <span id="tokensAvailable">{{tokens_available_from_DB}}</span>
+        </p>
+
+        <p><strong>Token SPIN WIN:</strong> 
+            <span id="tokenSpinWin">{{token_spinwin_from_DB}}</span>
+        </p>
+    </div>
+
+    <!-- 3rd Block -->
+    <div class="block">
+        <button class="signout">Sign Out</button>
+    </div>
+
+</body>
+</html>
