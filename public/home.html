@@ -15,17 +15,21 @@
     text-align:center;
   }
 
-  /* Logo + SPINWIN TOKEN */
-  .logo-box {
+  /* Logo + SPINWIN TOKEN (side-by-side) */
+  .logo-row {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:15px;
     margin-top:20px;
   }
-  .logo-box img {
-    width:140px;   /* same size as your previous layout */
+  .logo-row img {
+    width:70px;
+    height:70px;
   }
   .logo-title {
-    font-size:26px;
+    font-size:28px;
     font-weight:bold;
-    margin-top:8px;
     color:#ffd700;
   }
 
@@ -67,7 +71,7 @@
     text-align:center;
   }
 
-  /* NOT SOLID COLORS — new gradient style */
+  /* NOT solid colors — stylish gradients */
   .brick-big {
     background:linear-gradient(135deg, #ffd700, #ffef9f);
   }
@@ -88,7 +92,7 @@
     background:linear-gradient(135deg, #c561ff, #e6b3ff);
   }
 
-  /* Two‑brick rows */
+  /* Two-brick rows */
   .brick-row {
     display:flex;
     justify-content:center;
@@ -107,13 +111,31 @@
     color:#000;
     text-align:center;
   }
+
+  /* Bottom Navigation Bar (RESTORED IMAGES) */
+  .nav {
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:#111;
+    border-top:1px solid #ffd700;
+    display:flex;
+    justify-content:space-around;
+    padding:10px 0;
+  }
+
+  .nav-item img {
+    width:32px;
+    height:32px;
+  }
 </style>
 </head>
 
 <body>
 
-<!-- Logo -->
-<div class="logo-box">
+<!-- Logo Row -->
+<div class="logo-row">
   <img src="images/logo.png">
   <div class="logo-title">SPINWIN TOKEN</div>
 </div>
@@ -129,8 +151,8 @@
   </div>
 </div>
 
-<!-- FIRST ROW — restored text -->
-<div class="brick brick-big" onclick="openPage('SPIN WIN TOKEN')">
+<!-- FIRST ROW -->
+<div class="brick brick-big" onclick="go('home.html')">
   SPIN WIN TOKEN
 </div>
 
@@ -146,8 +168,26 @@
   <div class="brick-small brick-profile" onclick="go('profile.html')">Profile</div>
 </div>
 
+<!-- Bottom Navigation Bar (RESTORED) -->
+<div class="nav">
+  <div class="nav-item" onclick="go('home.html')">
+    <img src="images/nav-home.png">
+  </div>
+  <div class="nav-item" onclick="go('token.html')">
+    <img src="images/nav-token.png">
+  </div>
+  <div class="nav-item" onclick="go('spinwheel.html')">
+    <img src="images/nav-spinwheel.png">
+  </div>
+  <div class="nav-item" onclick="go('bingo.html')">
+    <img src="images/nav-bingo.png">
+  </div>
+  <div class="nav-item" onclick="go('profile.html')">
+    <img src="images/nav-profile.png">
+  </div>
+</div>
+
 <script>
-  /* Navigation */
   function go(page) {
     window.location.href = page;
   }
@@ -189,3 +229,4 @@
 
 </body>
 </html>
+
