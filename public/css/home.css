@@ -50,7 +50,7 @@ body {
   font-size:14px;
 }
 
-/* VERTICAL BUTTON LIST (colors from screenshot #1) */
+/* VERTICAL BUTTON LIST (FIRST SCREENSHOT COLORS) */
 .brick {
   width:90%;
   max-width:420px;
@@ -116,7 +116,7 @@ body {
   cursor:pointer;
 }
 
-/* BOTTOM ICON ROW (from screenshot #2) */
+/* BOTTOM ICON ROW (SECOND SCREENSHOT ICONS) */
 .icon-row {
   position:fixed;
   bottom:10px;
@@ -129,9 +129,6 @@ body {
 .icon-item {
   font-size:22px;
 }
-
-
-
 
 
 
