@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Home - SpinWinToken</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+  body {
+    background:#000;
+    color:#ffd700;
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:0;
+    text-align:center;
+  }
+
+  /* Logo */
+  .logo {
+    margin-top:25px;
+    font-size:28px;
+    font-weight:bold;
+    color:#ffd700;
+  }
+
+  /* Countdown Section */
+  .countdown-box {
+    margin-top:20px;
+    padding:20px;
+    background:#111;
+    border:1px solid #ffd700;
+    border-radius:10px;
+    width:90%;
+    max-width:420px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+
+  .countdown-title {
+    font-size:20px;
+    margin-bottom:10px;
+  }
+
+  .timer {
+    font-size:32px;
+    font-weight:bold;
+    margin-top:10px;
+  }
+
+  /* Bricks */
+  .brick {
+    width:90%;
+    max-width:420px;
+    margin:15px auto;
+    padding:25px;
+    border-radius:12px;
+    font-size:22px;
+    font-weight:bold;
+    cursor:pointer;
+    color:#000;
+  }
+
+  .brick-big { background:#ffd700; }
+  .brick-left { background:#ff6f61; }
+  .brick-right { background:#61c1ff; }
+  .brick-left2 { background:#7dff61; }
+  .brick-right2 { background:#c561ff; }
+
+  /* Popup Page */
+  .popup {
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.9);
+    color:#ffd700;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    padding:20px;
+    text-align:center;
+  }
+
+  .popup-text {
+    font-size:22px;
+    margin-bottom:30px;
+  }
+
+  .popup-close {
+    font-size:20px;
+    padding:12px 20px;
+    background:#ffd700;
+    color:#000;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+  }
+
+  /* Bottom Navigation */
+  .nav {
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:#111;
+    border-top:1px solid #ffd700;
+    display:flex;
+    justify-content:space-around;
+    padding:10px 0;
+  }
+
+  .nav-item {
+    color:#ffd700;
+    font-size:14px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="logo">SPINWIN TOKEN</div>
+
+<div class="countdown-box">
+  <div class="countdown-title">Spin Win Starts In</div>
+  <div id="timer" class="timer">Loading...</div>
+  <div style="margin-top:10px; font-size:14px;">
+    Eastern Standard Time (ET)<br>
+    Monday 8am • Thursday 8pm<br>
+    84‑hour cycle
+  </div>
+</div>
+
+<!-- Bricks -->
+<div class="brick brick-big" onclick="openPage('SPIN WIN TOKEN')">SPIN WIN TOKEN</div>
+
+<div class="brick brick-left" onclick="openPage('Token')">Token</div>
+<div class="brick brick-right" onclick="openPage('Spin Wheel')">Spin Wheel</div>
+
+<div class="brick brick-left2" onclick="openPage('Bingo')">Bingo</div>
+<div class="brick brick-right2" onclick="openPage('Profile')">Profile</div>
+
+<!-- Popup Page -->
+<div id="popup" class="popup">
+  <div id="popup-text" class="popup-text"></div>
+  <button class="popup-close" onclick="closePage()">X Close</button>
+</div>
+
+<!-- Bottom Navigation -->
+<div class="nav">
+  <div class="nav-item">Home</div>
+  <div class="nav-item">Token</div>
+  <div class="nav-item">SpinWheel</div>
+  <div class="nav-item">Bingo</div>
+  <div class="nav-item">Profile</div>
+</div>
+
+<script>
+  /* Popup Logic */
+  function openPage(name) {
+    document.getElementById("popup-text").textContent = name + " Page";
+    document.getElementById("popup").style.display = "flex";
+  }
+
+  function closePage() {
+    document.getElementById("popup").style.display = "none";
+  }
+
+  /* Countdown Timer (84-hour cycle) */
+  function updateTimer() {
+    const now = new Date();
+
+    // Monday 8am
+    const monday = new Date();
+    monday.setDate(now.getDate() + ((1 - now.getDay() + 7) % 7));
+    monday.setHours(8,0,0,0);
+
+    // Thursday 8pm
+    const thursday = new Date();
+    thursday.setDate(now.getDate() + ((4 - now.getDay() + 7) % 7));
+    thursday.setHours(20,0,0,0);
+
+    let nextEvent;
+
+    if (now < monday) nextEvent = monday;
+    else if (now < thursday) nextEvent = thursday;
+    else {
+      // Next Monday
+      monday.setDate(monday.getDate() + 7);
+      nextEvent = monday;
+    }
+
+    const diff = nextEvent - now;
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("timer").textContent =
+      `${hours}h ${minutes}m ${seconds}s`;
+  }
+
+  setInterval(updateTimer, 1000);
+  updateTimer();
+</script>
+
+</body>
+</html>
