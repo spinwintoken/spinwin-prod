@@ -15,10 +15,18 @@
     text-align:center;
   }
 
-  /* Logo */
-  .logo img {
-    width:160px;
-    margin-top:25px;
+  /* Logo + SPINWIN TOKEN */
+  .logo-box {
+    margin-top:20px;
+  }
+  .logo-box img {
+    width:140px;   /* same size as your previous layout */
+  }
+  .logo-title {
+    font-size:26px;
+    font-weight:bold;
+    margin-top:8px;
+    color:#ffd700;
   }
 
   /* Countdown Section */
@@ -46,6 +54,41 @@
   }
 
   /* Bricks */
+  .brick {
+    width:90%;
+    max-width:420px;
+    margin:15px auto;
+    padding:25px;
+    border-radius:12px;
+    font-size:22px;
+    font-weight:bold;
+    cursor:pointer;
+    color:#000;
+    text-align:center;
+  }
+
+  /* NOT SOLID COLORS — new gradient style */
+  .brick-big {
+    background:linear-gradient(135deg, #ffd700, #ffef9f);
+  }
+
+  .brick-token {
+    background:linear-gradient(135deg, #ff6f61, #ffb3a8);
+  }
+
+  .brick-spinwheel {
+    background:linear-gradient(135deg, #61c1ff, #a8e1ff);
+  }
+
+  .brick-bingo {
+    background:linear-gradient(135deg, #7dff61, #c8ffb3);
+  }
+
+  .brick-profile {
+    background:linear-gradient(135deg, #c561ff, #e6b3ff);
+  }
+
+  /* Two‑brick rows */
   .brick-row {
     display:flex;
     justify-content:center;
@@ -53,7 +96,7 @@
     margin-top:20px;
   }
 
-  .brick {
+  .brick-small {
     flex:1;
     max-width:180px;
     padding:25px;
@@ -64,86 +107,15 @@
     color:#000;
     text-align:center;
   }
-
-  .brick-big {
-    width:90%;
-    max-width:420px;
-    margin:20px auto;
-    padding:30px;
-    background:linear-gradient(135deg, #ffd700, #ffef9f);
-  }
-
-  .brick-token {
-    background:linear-gradient(135deg, #ff6f61, #ff9f9a);
-  }
-
-  .brick-spinwheel {
-    background:linear-gradient(135deg, #61c1ff, #9fddff);
-  }
-
-  .brick-bingo {
-    background:linear-gradient(135deg, #7dff61, #b8ff9f);
-  }
-
-  .brick-profile {
-    background:linear-gradient(135deg, #c561ff, #e29fff);
-  }
-
-  /* Popup Page */
-  .popup {
-    position:fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background:rgba(0,0,0,0.9);
-    color:#ffd700;
-    display:none;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    padding:20px;
-    text-align:center;
-  }
-
-  .popup-text {
-    font-size:22px;
-    margin-bottom:30px;
-  }
-
-  .popup-close {
-    font-size:20px;
-    padding:12px 20px;
-    background:#ffd700;
-    color:#000;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-  }
-
-  /* Bottom Navigation */
-  .nav {
-    position:fixed;
-    bottom:0;
-    left:0;
-    width:100%;
-    background:#111;
-    border-top:1px solid #ffd700;
-    display:flex;
-    justify-content:space-around;
-    padding:10px 0;
-  }
-
-  .nav-item img {
-    width:32px;
-    height:32px;
-  }
 </style>
 </head>
 
 <body>
 
 <!-- Logo -->
-<div class="logo">
+<div class="logo-box">
   <img src="images/logo.png">
+  <div class="logo-title">SPINWIN TOKEN</div>
 </div>
 
 <!-- Countdown -->
@@ -157,55 +129,24 @@
   </div>
 </div>
 
-<!-- Bricks -->
-<div class="brick-big" onclick="openPage('SPIN WIN TOKEN')">SPIN WIN TOKEN</div>
+<!-- FIRST ROW — restored text -->
+<div class="brick brick-big" onclick="openPage('SPIN WIN TOKEN')">
+  SPIN WIN TOKEN
+</div>
 
+<!-- SECOND ROW -->
 <div class="brick-row">
-  <div class="brick brick-token" onclick="go('token.html')">Token</div>
-  <div class="brick brick-spinwheel" onclick="go('spinwheel.html')">Spin Wheel</div>
+  <div class="brick-small brick-token" onclick="go('token.html')">Token</div>
+  <div class="brick-small brick-spinwheel" onclick="go('spinwheel.html')">Spin Wheel</div>
 </div>
 
+<!-- THIRD ROW -->
 <div class="brick-row">
-  <div class="brick brick-bingo" onclick="go('bingo.html')">Bingo</div>
-  <div class="brick brick-profile" onclick="go('profile.html')">Profile</div>
-</div>
-
-<!-- Popup Page -->
-<div id="popup" class="popup">
-  <div id="popup-text" class="popup-text"></div>
-  <button class="popup-close" onclick="closePage()">X Close</button>
-</div>
-
-<!-- Bottom Navigation -->
-<div class="nav">
-  <div class="nav-item" onclick="go('home.html')">
-    <img src="images/nav-home.png">
-  </div>
-  <div class="nav-item" onclick="go('token.html')">
-    <img src="images/nav-token.png">
-  </div>
-  <div class="nav-item" onclick="go('spinwheel.html')">
-    <img src="images/nav-spinwheel.png">
-  </div>
-  <div class="nav-item" onclick="go('bingo.html')">
-    <img src="images/nav-bingo.png">
-  </div>
-  <div class="nav-item" onclick="go('profile.html')">
-    <img src="images/nav-profile.png">
-  </div>
+  <div class="brick-small brick-bingo" onclick="go('bingo.html')">Bingo</div>
+  <div class="brick-small brick-profile" onclick="go('profile.html')">Profile</div>
 </div>
 
 <script>
-  /* Popup Logic */
-  function openPage(name) {
-    document.getElementById("popup-text").textContent = name + " Page";
-    document.getElementById("popup").style.display = "flex";
-  }
-
-  function closePage() {
-    document.getElementById("popup").style.display = "none";
-  }
-
   /* Navigation */
   function go(page) {
     window.location.href = page;
