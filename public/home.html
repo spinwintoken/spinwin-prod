@@ -15,7 +15,7 @@
     text-align:center;
   }
 
-  /* Logo + SPINWIN TOKEN (side-by-side) */
+  /* LOGO LEFT + TITLE RIGHT */
   .logo-row {
     display:flex;
     align-items:center;
@@ -33,7 +33,7 @@
     color:#ffd700;
   }
 
-  /* Countdown Section */
+  /* COUNTDOWN BOX */
   .countdown-box {
     margin-top:20px;
     padding:20px;
@@ -45,19 +45,17 @@
     margin-left:auto;
     margin-right:auto;
   }
-
   .countdown-title {
     font-size:20px;
     margin-bottom:10px;
   }
-
   .timer {
     font-size:32px;
     font-weight:bold;
     margin-top:10px;
   }
 
-  /* Bricks */
+  /* BRICKS — gradient + 3D lift */
   .brick {
     width:90%;
     max-width:420px;
@@ -69,37 +67,37 @@
     cursor:pointer;
     color:#000;
     text-align:center;
+    box-shadow:0px 6px 12px rgba(0,0,0,0.35);
+    transform:translateY(-2px);
   }
 
-  /* NOT solid colors — stylish gradients */
   .brick-big {
-    background:linear-gradient(135deg, #ffd700, #ffef9f);
+    background:linear-gradient(145deg, #f7d44c, #fce88a, #fff4d1);
   }
 
   .brick-token {
-    background:linear-gradient(135deg, #ff6f61, #ffb3a8);
+    background:linear-gradient(145deg, #ff5a5a, #ff8a8a, #ffd1d1);
   }
 
   .brick-spinwheel {
-    background:linear-gradient(135deg, #61c1ff, #a8e1ff);
+    background:linear-gradient(145deg, #5ab8ff, #8cd3ff, #d1efff);
   }
 
   .brick-bingo {
-    background:linear-gradient(135deg, #7dff61, #c8ffb3);
+    background:linear-gradient(145deg, #6aff6a, #9aff9a, #d1ffd1);
   }
 
   .brick-profile {
-    background:linear-gradient(135deg, #c561ff, #e6b3ff);
+    background:linear-gradient(145deg, #c46aff, #d98aff, #f4d1ff);
   }
 
-  /* Two-brick rows */
+  /* TWO-BRICK ROWS */
   .brick-row {
     display:flex;
     justify-content:center;
     gap:20px;
     margin-top:20px;
   }
-
   .brick-small {
     flex:1;
     max-width:180px;
@@ -110,9 +108,11 @@
     cursor:pointer;
     color:#000;
     text-align:center;
+    box-shadow:0px 6px 12px rgba(0,0,0,0.35);
+    transform:translateY(-2px);
   }
 
-  /* Bottom Navigation Bar (RESTORED IMAGES) */
+  /* BOTTOM NAVIGATION BAR (IMAGES RESTORED) */
   .nav {
     position:fixed;
     bottom:0;
@@ -124,7 +124,6 @@
     justify-content:space-around;
     padding:10px 0;
   }
-
   .nav-item img {
     width:32px;
     height:32px;
@@ -134,13 +133,13 @@
 
 <body>
 
-<!-- Logo Row -->
+<!-- LOGO + TITLE -->
 <div class="logo-row">
   <img src="images/logo.png">
   <div class="logo-title">SPINWIN TOKEN</div>
 </div>
 
-<!-- Countdown -->
+<!-- COUNTDOWN -->
 <div class="countdown-box">
   <div class="countdown-title">Spin Win Starts In</div>
   <div id="timer" class="timer">Loading...</div>
@@ -168,7 +167,7 @@
   <div class="brick-small brick-profile" onclick="go('profile.html')">Profile</div>
 </div>
 
-<!-- Bottom Navigation Bar (RESTORED) -->
+<!-- BOTTOM NAVIGATION -->
 <div class="nav">
   <div class="nav-item" onclick="go('home.html')">
     <img src="images/nav-home.png">
@@ -192,7 +191,7 @@
     window.location.href = page;
   }
 
-  /* Countdown Timer */
+  /* COUNTDOWN TIMER */
   function updateTimer() {
     const now = new Date();
 
@@ -229,4 +228,5 @@
 
 </body>
 </html>
+
 
