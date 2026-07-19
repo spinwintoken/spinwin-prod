@@ -60,11 +60,25 @@
     color:#000;
   }
 
-  .brick-big { background:#ffd700; }
-  .brick-left { background:#ff6f61; }
-  .brick-right { background:#61c1ff; }
-  .brick-left2 { background:#7dff61; }
-  .brick-right2 { background:#c561ff; }
+  .brick-big {
+    background:linear-gradient(135deg, #ffd700, #ffef9f);
+  }
+
+  .brick-left {
+    background:linear-gradient(135deg, #ff6f61, #ff9f9a);
+  }
+
+  .brick-right {
+    background:linear-gradient(135deg, #61c1ff, #9fddff);
+  }
+
+  .brick-left2 {
+    background:linear-gradient(135deg, #7dff61, #b8ff9f);
+  }
+
+  .brick-right2 {
+    background:linear-gradient(135deg, #c561ff, #e29fff);
+  }
 
   /* Popup Page */
   .popup {
@@ -109,9 +123,9 @@
     padding:10px 0;
   }
 
-  .nav-item {
-    color:#ffd700;
-    font-size:14px;
+  .nav-item img {
+    width:32px;
+    height:32px;
   }
 </style>
 </head>
@@ -147,11 +161,21 @@
 
 <!-- Bottom Navigation -->
 <div class="nav">
-  <div class="nav-item">Home</div>
-  <div class="nav-item">Token</div>
-  <div class="nav-item">SpinWheel</div>
-  <div class="nav-item">Bingo</div>
-  <div class="nav-item">Profile</div>
+  <div class="nav-item" onclick="go('home.html')">
+    <img src="images/nav-home.png">
+  </div>
+  <div class="nav-item" onclick="go('token.html')">
+    <img src="images/nav-token.png">
+  </div>
+  <div class="nav-item" onclick="go('spinwheel.html')">
+    <img src="images/nav-spinwheel.png">
+  </div>
+  <div class="nav-item" onclick="go('bingo.html')">
+    <img src="images/nav-bingo.png">
+  </div>
+  <div class="nav-item" onclick="go('profile.html')">
+    <img src="images/nav-profile.png">
+  </div>
 </div>
 
 <script>
@@ -163,6 +187,11 @@
 
   function closePage() {
     document.getElementById("popup").style.display = "none";
+  }
+
+  /* Navigation */
+  function go(page) {
+    window.location.href = page;
   }
 
   /* Countdown Timer (84-hour cycle) */
@@ -184,7 +213,6 @@
     if (now < monday) nextEvent = monday;
     else if (now < thursday) nextEvent = thursday;
     else {
-      // Next Monday
       monday.setDate(monday.getDate() + 7);
       nextEvent = monday;
     }
