@@ -4,7 +4,140 @@
 <meta charset="UTF-8" />
 <title>Home - SpinWinToken</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="css/style.css">
+
+<style>
+  body {
+    background:#000;
+    color:#ffd700;
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:0;
+    text-align:center;
+    padding-bottom:80px;
+  }
+
+  /* LOGO + TITLE */
+  .logo-row {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:15px;
+    margin-top:20px;
+  }
+  .logo-row img {
+    width:70px;
+    height:70px;
+  }
+  .logo-title {
+    font-size:28px;
+    font-weight:bold;
+  }
+
+  /* COUNTDOWN BOX */
+  .countdown-box {
+    margin-top:20px;
+    padding:20px;
+    background:#111;
+    border:1px solid #ffd700;
+    border-radius:10px;
+    width:90%;
+    max-width:420px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .countdown-title {
+    font-size:20px;
+  }
+  .timer {
+    font-size:32px;
+    font-weight:bold;
+    margin-top:10px;
+  }
+  .countdown-info {
+    margin-top:10px;
+    font-size:14px;
+  }
+
+  /* VERTICAL BUTTON LIST (FIRST SCREENSHOT COLORS) */
+  .brick {
+    width:90%;
+    max-width:420px;
+    margin:15px auto;
+    padding:25px;
+    border-radius:12px;
+    font-size:22px;
+    font-weight:bold;
+    cursor:pointer;
+    color:#000;
+    text-align:center;
+    box-shadow:0px 6px 12px rgba(0,0,0,0.35);
+  }
+
+  .brick-big {
+    background:linear-gradient(145deg, #f7d44c, #fce88a, #fff4d1);
+  }
+  .brick-token {
+    background:linear-gradient(145deg, #ff5a5a, #ff8a8a, #ffd1d1);
+  }
+  .brick-spinwheel {
+    background:linear-gradient(145deg, #5ab8ff, #8cd3ff, #d1efff);
+  }
+  .brick-bingo {
+    background:linear-gradient(145deg, #6aff6a, #9aff9a, #d1ffd1);
+  }
+  .brick-profile {
+    background:linear-gradient(145deg, #c46aff, #d98aff, #f4d1ff);
+  }
+
+  /* POPUP */
+  .popup {
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.85);
+    color:#ffd700;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    padding:20px;
+    text-align:center;
+    backdrop-filter:blur(4px);
+    z-index:999;
+  }
+  .popup-box {
+    background:#111;
+    border:1px solid #ffd700;
+    border-radius:14px;
+    padding:25px;
+    width:85%;
+    max-width:380px;
+  }
+  .popup-close {
+    margin-top:20px;
+    font-size:18px;
+    padding:10px 18px;
+    background:#ffd700;
+    color:#000;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+  }
+
+  /* BOTTOM ICON ROW (SECOND SCREENSHOT ICONS) */
+  .icon-row {
+    position:fixed;
+    bottom:10px;
+    left:0;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:18px;
+  }
+  .icon-item {
+    font-size:22px;
+  }
+</style>
 </head>
 
 <body>
@@ -26,7 +159,7 @@
   </div>
 </div>
 
-<!-- VERTICAL BUTTON LIST (FIRST SCREENSHOT COLORS) -->
+<!-- VERTICAL BUTTON LIST -->
 <div class="brick brick-big" onclick="openPage('SPIN WIN TOKEN')">
   SPIN WIN TOKEN
 </div>
@@ -55,7 +188,7 @@
   </div>
 </div>
 
-<!-- BOTTOM ICON ROW (SECOND SCREENSHOT ICONS) -->
+<!-- BOTTOM ICON ROW -->
 <div class="icon-row">
   <div class="icon-item">🏠</div>
   <div class="icon-item">🏅</div>
@@ -115,6 +248,7 @@
 
 </body>
 </html>
+
 
 
 
