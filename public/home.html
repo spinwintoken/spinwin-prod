@@ -11,57 +11,39 @@
 
 <div class="page">
 
-  <!-- LOGO + TITLE -->
-  <div class="logo-row">
-    <img src="images/logo.png">
-    <div class="logo-title">SPINWIN TOKEN</div>
-  </div>
+  <!-- TITLE -->
+  <div class="logo-title">SPINWIN TOKEN</div>
 
   <!-- COUNTDOWN -->
   <div class="countdown-box">
     <div class="countdown-title">Spin Win Starts In</div>
     <div id="timer" class="timer">Loading...</div>
-    <div style="margin-top:10px; font-size:14px;">
+    <div class="countdown-info">
       Eastern Standard Time (ET)<br>
       Monday 8am • Thursday 8pm<br>
       84‑hour cycle
     </div>
   </div>
 
-  <!-- FIRST ROW -->
-  <div class="brick brick-big" onclick="openPage('SPIN WIN TOKEN')">
-    SPIN WIN TOKEN
-  </div>
-
-  <!-- SECOND ROW -->
-  <div class="brick-row">
-    <div class="brick-small brick-token" onclick="openPage('Token')">Token</div>
-    <div class="brick-small brick-spinwheel" onclick="openPage('Spin Wheel')">Spin Wheel</div>
-  </div>
-
-  <!-- THIRD ROW -->
-  <div class="brick-row">
-    <div class="brick-small brick-bingo" onclick="openPage('Bingo')">Bingo</div>
-    <div class="brick-small brick-profile" onclick="openPage('Profile')">Profile</div>
+  <!-- MENU LIST (VERTICAL, CENTERED) -->
+  <div class="menu-list">
+    <div class="menu-item" onclick="go('home.html')">SPIN WIN TOKEN</div>
+    <div class="menu-item" onclick="go('token.html')">Token</div>
+    <div class="menu-item" onclick="go('spinwheel.html')">Spin Wheel</div>
+    <div class="menu-item" onclick="go('bingo.html')">Bingo</div>
+    <div class="menu-item" onclick="go('profile.html')">Profile</div>
+    <div class="menu-item menu-close" onclick="closePage()">Close</div>
   </div>
 
 </div>
 
-<!-- POPUP PAGE -->
-<div id="popup" class="popup">
-  <div class="popup-box">
-    <div id="popup-text"></div>
-    <button class="popup-close" onclick="closePage()">Close</button>
-  </div>
-</div>
-
-<!-- BOTTOM NAVIGATION — EMOJI VERSION -->
-<div class="nav">
-  <div class="nav-item" onclick="go('home.html')">🏠</div>
-  <div class="nav-item" onclick="go('token.html')">💰</div>
-  <div class="nav-item" onclick="go('spinwheel.html')">🎡</div>
-  <div class="nav-item" onclick="go('bingo.html')">🎲</div>
-  <div class="nav-item" onclick="go('profile.html')">👤</div>
+<!-- BOTTOM ICON ROW (SMALL EMOJIS) -->
+<div class="icon-row">
+  <div class="icon-item">🏠</div>
+  <div class="icon-item">🏅</div>
+  <div class="icon-item">🍪</div>
+  <div class="icon-item">⬡</div>
+  <div class="icon-item">👤</div>
 </div>
 
 <script>
@@ -69,13 +51,9 @@
     window.location.href = page;
   }
 
-  function openPage(name) {
-    document.getElementById("popup-text").textContent = name + " Page";
-    document.getElementById("popup").style.display = "flex";
-  }
-
   function closePage() {
-    document.getElementById("popup").style.display = "none";
+    // for now just stay on page; you can change this later
+    alert("Close pressed");
   }
 
   /* COUNTDOWN TIMER */
@@ -115,3 +93,4 @@
 
 </body>
 </html>
+
