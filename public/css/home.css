@@ -5,7 +5,7 @@ body {
   margin:0;
   padding:0;
   text-align:center;
-  padding-bottom:80px; /* space for nav bar */
+  padding-bottom:80px;
 }
 
 /* LOGO + TITLE */
@@ -23,7 +23,6 @@ body {
 .logo-title {
   font-size:28px;
   font-weight:bold;
-  color:#ffd700;
 }
 
 /* COUNTDOWN BOX */
@@ -40,7 +39,6 @@ body {
 }
 .countdown-title {
   font-size:20px;
-  margin-bottom:10px;
 }
 .timer {
   font-size:32px;
@@ -52,7 +50,7 @@ body {
   font-size:14px;
 }
 
-/* VERTICAL BRICKS (MATCH YOUR SCREENSHOT) */
+/* VERTICAL BUTTON LIST (colors from screenshot #1) */
 .brick {
   width:90%;
   max-width:420px;
@@ -67,7 +65,6 @@ body {
   box-shadow:0px 6px 12px rgba(0,0,0,0.35);
 }
 
-/* COLORS */
 .brick-big {
   background:linear-gradient(145deg, #f7d44c, #fce88a, #fff4d1);
 }
@@ -119,28 +116,20 @@ body {
   cursor:pointer;
 }
 
-/* BOTTOM NAV BAR (EMOJI) */
-.nav {
+/* BOTTOM ICON ROW (from screenshot #2) */
+.icon-row {
   position:fixed;
-  bottom:0;
+  bottom:10px;
   left:0;
   width:100%;
-  background:#111;
-  border-top:1px solid #ffd700;
   display:flex;
-  justify-content:space-around;
-  padding:10px 0;
-  z-index:1000;
+  justify-content:center;
+  gap:18px;
 }
-.nav-item {
-  font-size:32px;
-  color:white;
-  cursor:pointer;
-  text-shadow:0px 0px 10px rgba(255,255,255,0.6);
+.icon-item {
+  font-size:22px;
 }
-.nav-item:hover {
-  transform:scale(1.25);
-}
+
 
 
 
