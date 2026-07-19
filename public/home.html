@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Home - SpinWinToken</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="page">
+
+  <!-- LOGO + TITLE -->
+  <div class="logo-row">
+    <img src="images/logo.png">
+    <div class="logo-title">SPINWIN TOKEN</div>
+  </div>
+
+  <!-- COUNTDOWN -->
+  <div class="countdown-box">
+    <div class="countdown-title">Spin Win Starts In</div>
+    <div id="timer" class="timer">Loading...</div>
+    <div style="margin-top:10px; font-size:14px;">
+      Eastern Standard Time (ET)<br>
+      Monday 8am • Thursday 8pm<br>
+      84‑hour cycle
+    </div>
+  </div>
+
+  <!-- FIRST ROW -->
+  <div class="brick brick-big" onclick="openPage('SPIN WIN TOKEN')">
+    SPIN WIN TOKEN
+  </div>
+
+  <!-- SECOND ROW -->
+  <div class="brick-row">
+    <div class="brick-small brick-token" onclick="openPage('Token')">Token</div>
+    <div class="brick-small brick-spinwheel" onclick="openPage('Spin Wheel')">Spin Wheel</div>
+  </div>
+
+  <!-- THIRD ROW -->
+  <div class="brick-row">
+    <div class="brick-small brick-bingo" onclick="openPage('Bingo')">Bingo</div>
+    <div class="brick-small brick-profile" onclick="openPage('Profile')">Profile</div>
+  </div>
+
+</div>
+
+<!-- POPUP PAGE -->
+<div id="popup" class="popup">
+  <div class="popup-box">
+    <div id="popup-text"></div>
+    <button class="popup-close" onclick="closePage()">Close</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAVIGATION — EMOJI VERSION -->
+<div class="nav">
+  <div class="nav-item" onclick="go('home.html')">🏠</div>
+  <div class="nav-item" onclick="go('token.html')">💰</div>
+  <div class="nav-item" onclick="go('spinwheel.html')">🎡</div>
+  <div class="nav-item" onclick="go('bingo.html')">🎲</div>
+  <div class="nav-item" onclick="go('profile.html')">👤</div>
+</div>
+
+<script>
+  function go(page) {
+    window.location.href = page;
+  }
+
+  function openPage(name) {
+    document.getElementById("popup-text").textContent = name + " Page";
+    document.getElementById("popup").style.display = "flex";
+  }
+
+  function closePage() {
+    document.getElementById("popup").style.display = "none";
+  }
+
+  /* COUNTDOWN TIMER */
+  function updateTimer() {
+    const now = new Date();
+
+    const monday = new Date();
+    monday.setDate(now.getDate() + ((1 - now.getDay() + 7) % 7));
+    monday.setHours(8,0,0,0);
+
+    const thursday = new Date();
+    thursday.setDate(now.getDate() + ((4 - now.getDay() + 7) % 7));
+    thursday.setHours(20,0,0,0);
+
+    let nextEvent;
+
+    if (now < monday) nextEvent = monday;
+    else if (now < thursday) nextEvent = thursday;
+    else {
+      monday.setDate(monday.getDate() + 7);
+      nextEvent = monday;
+    }
+
+    const diff = nextEvent - now;
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("timer").textContent =
+      `${hours}h ${minutes}m ${seconds}s`;
+  }
+
+  setInterval(updateTimer, 1000);
+  updateTimer();
+</script>
+
+</body>
+</html>
