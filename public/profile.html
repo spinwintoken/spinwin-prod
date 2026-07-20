@@ -36,6 +36,16 @@
     text-align:center;
   }
 
+  .copy-btn {
+    background:#ffd700;
+    color:#000;
+    padding:8px 14px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    margin-top:10px;
+  }
+
   .signout-btn {
     background:#d9534f;
     color:#fff;
@@ -70,8 +80,23 @@
 <h1 style="margin-top:20px;">Profile 🧑</h1>
 
 <div class="block">
-  <div class="title">Team Member Result</div>
-  <p><strong>Team Member Value:</strong> <span id="teamMembers"></span></p>
+  <div class="title">Referral Information</div>
+
+  <p><strong>Referral Code:</strong> <span id="referralCode"></span></p>
+
+  <p><strong>Your Invitation Link:</strong></p>
+  <p id="inviteLink"></p>
+
+  <button class="copy-btn" onclick="copyInvite()">Copy Link</button>
+</div>
+
+<div class="block">
+  <div class="title">Team Members</div>
+
+  <p><strong>Team Members:</strong> <span id="teamMembers"></span></p>
+  <p><strong>Team Tokens Purchased:</strong> <span id="teamTokenPurchased"></span></p>
+  <p><strong>Token Available:</strong> <span id="teamTokenAvailable"></span></p>
+  <p><strong>SpinWin Token:</strong> <span id="spinWinToken"></span></p>
 </div>
 
 <div class="block">
@@ -91,48 +116,20 @@ const supabaseUrl = "https://zejhbfuuherovlxklrgy.supabase.co";
 const supabaseKey = "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ";
 const client = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-/* ⭐ TEAM MEMBER LOGIC ⭐ */
-async function loadTeamMemberValue(referralCode) {
-
-  const { data: rows, error } = await client
-    .from("UsersSQL")
-    .select("teammembers")
-    .eq("referred_by", referralCode);
-
-  if (error || !rows || rows.length === 0) {
-    document.getElementById("teamMembers").textContent = "0";
-    return;
-  }
-
-  const nums = rows
-    .map(r => Number(r.teammembers))
-    .filter(v => !Number.isNaN(v));
-
-  if (nums.length === 0) {
-    document.getElementById("teamMembers").textContent = "0";
-    return;
-  }
-
-  const highest = Math.max(...nums);
-
-  document.getElementById("teamMembers").textContent = highest;
-}
-
-/* ⭐ LOAD PROFILE (CORRECT SESSION LOGIC) ⭐ */
 async function loadProfile() {
 
+  /* ⭐ SAME WORKING SESSION LOGIC AS registerconfirm.html ⭐ */
   let session = null;
 
-  // Wait until Supabase restores the session
   while (!session) {
     const { data } = await client.auth.getSession();
     session = data.session;
-    await new Promise(r => setTimeout(r, 50));
+    await new Promise(r => setTimeout(r, 50)); // wait 50ms
   }
 
   const email = session.user.email;
 
-  // Load user row
+  /* ⭐ Load DB row */
   const { data: userRow, error } = await client
     .from("UsersSQL")
     .select("*")
@@ -144,8 +141,22 @@ async function loadProfile() {
     return;
   }
 
-  // Load teammember value using referralcode
-  await loadTeamMemberValue(userRow.referralcode);
+  /* ⭐ Display ALL DB values */
+  document.getElementById("referralCode").textContent = userRow.referralcode;
+
+  document.getElementById("inviteLink").textContent =
+    `https://spinwintoken.com?invite=${userRow.referralcode}`;
+
+  document.getElementById("teamMembers").textContent = userRow.teammembers;
+  document.getElementById("teamTokenPurchased").textContent = userRow.teamtokenpurchased;
+  document.getElementById("teamTokenAvailable").textContent = userRow.teamtokenavailable;
+  document.getElementById("spinWinToken").textContent = userRow.spinwintoken;
+}
+
+function copyInvite() {
+  const link = document.getElementById("inviteLink").textContent;
+  navigator.clipboard.writeText(link);
+  alert("Invitation link copied!");
 }
 
 async function signOut() {
@@ -158,4 +169,5 @@ loadProfile();
 
 </body>
 </html>
+
 
