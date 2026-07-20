@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Profile - SpinWinToken</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- SUPABASE JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  body {
+    background:#000;
+    color:#ffd700;
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:0;
+    text-align:center;
+    padding-bottom:90px;
+  }
+
+  .block {
+    background:#111;
+    border:1px solid #ffd700;
+    border-radius:14px;
+    padding:20px;
+    width:90%;
+    max-width:420px;
+    margin:20px auto;
+    text-align:left;
+  }
+
+  .title {
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:10px;
+    text-align:center;
+  }
+
+  .copy-btn {
+    background:#ffd700;
+    color:#000;
+    padding:8px 14px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    margin-top:10px;
+  }
+
+  .signout-btn {
+    background:#d9534f;
+    color:#fff;
+    padding:12px 20px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    width:100%;
+    font-size:18px;
+    margin-top:10px;
+  }
+
+  /* BOTTOM NAV ICONS */
+  .icon-row {
+    position:fixed;
+    bottom:10px;
+    left:0;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:40px;
+  }
+  .icon-item {
+    font-size:26px;
+    opacity:0.9;
+    cursor:pointer;
+  }
+</style>
+</head>
+
+<body>
+
+<h1 style="margin-top:20px;">Profile 🧑</h1>
+
+<!-- BLOCK 1 -->
+<div class="block">
+  <div class="title">Referral Information</div>
+
+  <p><strong>User Referral Code:</strong> <span id="referralCode">Loading...</span></p>
+
+  <p><strong>Your Invitation Link:</strong></p>
+  <p id="inviteLink">Loading...</p>
+
+  <button class="copy-btn" onclick="copyInvite()">Copy Link</button>
+</div>
+
+<!-- BLOCK 2 -->
+<div class="block">
+  <div class="title">Team Members</div>
+
+  <p><strong>Number of Team Members:</strong> <span id="teamMembers">Loading...</span></p>
+
+  <p><strong>Team Tokens Purchased:</strong> <span id="teamTokenPurchased">Loading...</span></p>
+
+  <p><strong>Token Available for Purchase:</strong> <span id="teamTokenAvailable">Loading...</span></p>
+
+  <p><strong>Token SPIN WIN:</strong> <span id="spinWinToken">Loading...</span></p>
+</div>
+
+<!-- BLOCK 3 -->
+<div class="block">
+  <button class="signout-btn" onclick="signOut()">Sign Out</button>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="icon-row">
+  <div class="icon-item" onclick="location.href='home.html'">🏠</div>
+  <div class="icon-item" onclick="location.href='token.html'">🏅</div>
+  <div class="icon-item" onclick="location.href='spinwheel.html'">🎡</div>
+  <div class="icon-item" onclick="location.href='bingo.html'">🎯</div>
+  <div class="icon-item" onclick="location.href='profile.html'">🧑</div>
+</div>
+
+<script>
+  const supabase = supabase.createClient(
+    "https://zejhbfuuherovlxklrgy.supabase.co",
+    "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
+  );
+
+  async function loadProfile() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      location.href = "signin.html";
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("UsersSQL")
+      .select("*")
+      .eq("email", user.email)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    document.getElementById("referralCode").textContent = data.referralcode;
+    document.getElementById("inviteLink").textContent =
+      `https://spinwintoken.com?invite=${data.referralcode}`;
+
+    document.getElementById("teamMembers").textContent = data.teammembers;
+    document.getElementById("teamTokenPurchased").textContent = data.teamtokenpurchased;
+    document.getElementById("teamTokenAvailable").textContent = data.teamtokenavailable;
+    document.getElementById("spinWinToken").textContent = data.spinwintoken;
+  }
+
+  function copyInvite() {
+    const link = document.getElementById("inviteLink").textContent;
+    navigator.clipboard.writeText(link);
+    alert("Invitation link copied!");
+  }
+
+  async function signOut() {
+    await supabase.auth.signOut();
+    location.href = "signin.html";
+  }
+
+  loadProfile();
+</script>
+
+</body>
+</html>
