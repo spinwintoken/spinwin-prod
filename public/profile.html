@@ -46,14 +46,16 @@
     margin-top:10px;
   }
 
-  /* ⭐ FIXED — no red block, just text */
+  /* ⭐ FIXED — white text, centered, no background */
   .signout-btn {
     background:none;
-    color:#ffd700;
+    color:#ffffff;
     padding:0;
     border:none;
     cursor:pointer;
-    font-size:18px;
+    font-size:20px;
+    width:100%;
+    text-align:center;
     margin-top:10px;
   }
 
@@ -124,7 +126,7 @@ async function computeTeamMembers(referralCode) {
     .eq("referred_by", referralCode);
 
   if (error || !rows || rows.length === 0) {
-    return 0; // no referred users
+    return 0;
   }
 
   const nums = rows
@@ -135,7 +137,7 @@ async function computeTeamMembers(referralCode) {
     return 0;
   }
 
-  return Math.max(...nums); // highest teammembers value
+  return Math.max(...nums);
 }
 
 /* ⭐ LOAD PROFILE ⭐ */
@@ -167,11 +169,9 @@ async function loadProfile() {
   document.getElementById("inviteLink").textContent =
     `https://spinwintoken.com?invite=${userRow.referralcode}`;
 
-  /* ⭐ APPLY LOGIC-BASED TEAM MEMBER VALUE ⭐ */
   const teamMemberValue = await computeTeamMembers(userRow.referralcode);
   document.getElementById("teamMembers").textContent = teamMemberValue;
 
-  /* ⭐ KEEP ORIGINAL VALUES ⭐ */
   document.getElementById("teamTokenPurchased").textContent = userRow.teamtokenpurchased;
   document.getElementById("teamTokenAvailable").textContent = userRow.teamtokenavailable;
   document.getElementById("spinWinToken").textContent = userRow.spinwintoken;
@@ -193,3 +193,4 @@ loadProfile();
 
 </body>
 </html>
+
