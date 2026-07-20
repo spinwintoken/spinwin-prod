@@ -18,6 +18,7 @@
     padding-bottom:90px;
   }
 
+  /* LOGO + TITLE */
   .logo-row {
     display:flex;
     align-items:center;
@@ -28,6 +29,7 @@
   .logo-icon { font-size:60px; }
   .logo-title { font-size:28px; font-weight:bold; }
 
+  /* COUNTDOWN BOX */
   .countdown-box {
     margin-top:20px;
     padding:20px;
@@ -43,6 +45,7 @@
   .timer { font-size:32px; font-weight:bold; margin-top:10px; }
   .countdown-info { margin-top:10px; font-size:14px; }
 
+  /* DEEP 3D BRICKS */
   .brick {
     flex:1;
     margin:15px auto;
@@ -62,13 +65,27 @@
       -10px -10px 20px rgba(255,255,255,0.05);
   }
 
-  .brick-big { background:linear-gradient(145deg,#f7d44c,#fce88a,#fff4d1); }
-  .brick-charity { background:linear-gradient(145deg,#fff4d1,#ffe9a3,#f7d44c); }
-  .brick-token { background:linear-gradient(145deg,#ff5a5a,#ff8a8a,#ffd1d1); }
-  .brick-spinwheel { background:linear-gradient(145deg,#5ab8ff,#8cd3ff,#d1efff); }
-  .brick-bingo { background:linear-gradient(145deg,#6aff6a,#9aff9a,#d1ffd1); }
-  .brick-profile { background:linear-gradient(145deg,#c46aff,#d98aff,#f4d1ff); }
+  /* COLORS */
+  .brick-big {
+    background:linear-gradient(145deg, #f7d44c, #fce88a, #fff4d1);
+  }
+  .brick-charity {
+    background:linear-gradient(145deg, #fff4d1, #ffe9a3, #f7d44c);
+  }
+  .brick-token {
+    background:linear-gradient(145deg, #ff5a5a, #ff8a8a, #ffd1d1);
+  }
+  .brick-spinwheel {
+    background:linear-gradient(145deg, #5ab8ff, #8cd3ff, #d1efff);
+  }
+  .brick-bingo {
+    background:linear-gradient(145deg, #6aff6a, #9aff9a, #d1ffd1);
+  }
+  .brick-profile {
+    background:linear-gradient(145deg, #c46aff, #d98aff, #f4d1ff);
+  }
 
+  /* FIRST ROW SPLIT INTO TWO */
   .brick-row-two {
     display:flex;
     justify-content:center;
@@ -78,6 +95,7 @@
     margin:20px auto;
   }
 
+  /* BOTTOM NAV ICONS */
   .icon-row {
     position:fixed;
     bottom:10px;
@@ -97,14 +115,16 @@
 
 <body>
 
+<!-- LOGO + TITLE -->
 <div class="logo-row">
   <div class="logo-icon">🎡</div>
   <div class="logo-title">SPINWIN TOKEN</div>
 </div>
 
+<!-- COUNTDOWN -->
 <div class="countdown-box">
   <div class="countdown-title">Spin Win Starts In</div>
-  <div id="timer" class="timer"></div>
+  <div id="timer" class="timer">Loading...</div>
   <div class="countdown-info">
     Eastern Standard Time (ET)<br>
     Monday 8am • Thursday 8pm<br>
@@ -112,16 +132,24 @@
   </div>
 </div>
 
+<!-- FIRST ROW: TWO BRICKS -->
 <div class="brick-row-two">
-  <div class="brick brick-big" onclick="location.href='token.html'">SPIN WIN TOKEN 🏅</div>
-  <div class="brick brick-charity" onclick="alert('Charity section coming soon!')"></div>
+  <div class="brick brick-big" onclick="location.href='token.html'">
+    SPIN WIN TOKEN 🏅
+  </div>
+
+  <div class="brick brick-charity" onclick="alert('Charity section coming soon!')">
+    <br><small></small>
+  </div>
 </div>
 
+<!-- VERTICAL BUTTON LIST -->
 <div class="brick brick-token" onclick="location.href='token.html'">Token 🏅</div>
 <div class="brick brick-spinwheel" onclick="location.href='spinwheel.html'">Spin Wheel 🎡</div>
 <div class="brick brick-bingo" onclick="location.href='bingo.html'">Bingo 🎯</div>
 <div class="brick brick-profile" onclick="location.href='profile.html'">Profile 🧑</div>
 
+<!-- BOTTOM ICON ROW -->
 <div class="icon-row">
   <div class="icon-item" onclick="location.href='home.html'">🏠</div>
   <div class="icon-item" onclick="location.href='token.html'">🏅</div>
@@ -138,13 +166,16 @@
 
   async function checkUser() {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) location.href = "signin.html";
+    if (!user) {
+      location.href = "signin.html";
+    }
   }
 
   checkUser();
 
   function updateTimer() {
     const now = new Date();
+
     const monday = new Date();
     monday.setDate(now.getDate() + ((1 - now.getDay() + 7) % 7));
     monday.setHours(8,0,0,0);
@@ -154,16 +185,22 @@
     thursday.setHours(20,0,0,0);
 
     let nextEvent;
+
     if (now < monday) nextEvent = monday;
     else if (now < thursday) nextEvent = thursday;
-    else { monday.setDate(monday.getDate() + 7); nextEvent = monday; }
+    else {
+      monday.setDate(monday.getDate() + 7);
+      nextEvent = monday;
+    }
 
     const diff = nextEvent - now;
-    const h = Math.floor(diff / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
 
-    document.getElementById("timer").textContent = `${h}h ${m}m ${s}s`;
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("timer").textContent =
+      `${hours}h ${minutes}m ${seconds}s`;
   }
 
   setInterval(updateTimer, 1000);
@@ -172,4 +209,5 @@
 
 </body>
 </html>
+
 
