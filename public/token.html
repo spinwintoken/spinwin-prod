@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Token - SpinWinToken</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+  body {
+    background:#000;
+    color:#ffd700;
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:0;
+    text-align:center;
+    padding-bottom:90px;
+  }
+
+  /* COUNTDOWN BOX */
+  .countdown-box {
+    margin-top:20px;
+    padding:20px;
+    background:#111;
+    border:1px solid #ffd700;
+    border-radius:10px;
+    width:90%;
+    max-width:420px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .countdown-title {
+    font-size:20px;
+  }
+  .timer {
+    font-size:32px;
+    font-weight:bold;
+    margin-top:10px;
+  }
+  .countdown-info {
+    margin-top:10px;
+    font-size:14px;
+  }
+
+  /* FIRST BLOCK (screenshot format) */
+  .price-box {
+    margin-top:20px;
+    padding:20px;
+    background:#111;
+    border:1px solid #ffd700;
+    border-radius:10px;
+    width:90%;
+    max-width:420px;
+    margin-left:auto;
+    margin-right:auto;
+    text-align:center;
+  }
+  .price-title {
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:10px;
+  }
+  .price-sub {
+    font-size:18px;
+    margin-bottom:20px;
+  }
+  table {
+    width:100%;
+    color:#ffd700;
+    font-size:14px;
+    border-collapse:collapse;
+  }
+  td {
+    border:1px solid #ffd700;
+    padding:10px;
+  }
+
+  /* BOTTOM NAV ICONS */
+  .icon-row {
+    position:fixed;
+    bottom:10px;
+    left:0;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:40px;
+  }
+  .icon-item {
+    font-size:26px;
+    opacity:0.9;
+    cursor:pointer;
+  }
+</style>
+</head>
+
+<body>
+
+<h1 style="margin-top:20px;">SPINWIN TOKEN</h1>
+
+<!-- COUNTDOWN -->
+<div class="countdown-box">
+  <div class="countdown-title">Spin Win Starts In</div>
+  <div id="timer" class="timer">Loading...</div>
+  <div class="countdown-info">
+    Eastern Standard Time (ET)<br>
+    Monday 8am • Thursday 8pm<br>
+    84‑hour cycle
+  </div>
+</div>
+
+<!-- ⭐ FIRST BLOCK (Screenshot Format) -->
+<div class="price-box">
+  <div class="price-title">PRICE INDEX CA</div>
+  <div class="price-sub">Price Index = #totalindex#</div>
+
+  <table>
+    <tr>
+      <td><strong>PHASE I</strong></td>
+      <td><strong>PHASE II</strong></td>
+      <td><strong>PHASE III</strong></td>
+    </tr>
+    <tr>
+      <td>TOTAL TOKENS: 17,000,000</td>
+      <td>TOTAL TOKENS: 1,000,000</td>
+      <td>TOTAL TOKENS: 17,000,000</td>
+    </tr>
+    <tr>
+      <td>DISTRIBUTED: #token1#</td>
+      <td>DISTRIBUTED: #token2#</td>
+      <td>DISTRIBUTED: #token3#</td>
+    </tr>
+  </table>
+</div>
+
+<!-- BOTTOM ICON ROW -->
+<div class="icon-row">
+  <div class="icon-item" onclick="location.href='home.html'">🏠</div>
+  <div class="icon-item" onclick="location.href='token.html'">🏅</div>
+  <div class="icon-item" onclick="location.href='spinwheel.html'">🎡</div>
+  <div class="icon-item" onclick="location.href='bingo.html'">🎯</div>
+  <div class="icon-item" onclick="location.href='profile.html'">🧑</div>
+</div>
+
+<script>
+  /* COUNTDOWN TIMER */
+  function updateTimer() {
+    const now = new Date();
+
+    const monday = new Date();
+    monday.setDate(now.getDate() + ((1 - now.getDay() + 7) % 7));
+    monday.setHours(8,0,0,0);
+
+    const thursday = new Date();
+    thursday.setDate(now.getDate() + ((4 - now.getDay() + 7) % 7));
+    thursday.setHours(20,0,0,0);
+
+    let nextEvent;
+
+    if (now < monday) nextEvent = monday;
+    else if (now < thursday) nextEvent = thursday;
+    else {
+      monday.setDate(monday.getDate() + 7);
+      nextEvent = monday;
+    }
+
+    const diff = nextEvent - now;
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("timer").textContent =
+      `${hours}h ${minutes}m ${seconds}s`;
+  }
+
+  setInterval(updateTimer, 1000);
+  updateTimer();
+</script>
+
+<!-- SUPABASE AUTH CHECK -->
+<script>
+  const supabase = supabase.createClient(
+    "https://zejhbfuuherovlxklrgy.supabase.co",
+    "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
+  );
+
+  async function checkUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      location.href = "signin.html";
+    }
+  }
+
+  checkUser();
+</script>
+
+</body>
+</html>
