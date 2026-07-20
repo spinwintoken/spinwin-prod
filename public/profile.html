@@ -112,52 +112,57 @@
 </div>
 
 <script>
-window.onload = async function() {
-
   const supabase = supabase.createClient(
     "https://zejhbfuuherovlxklrgy.supabase.co",
     "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  async function loadProfile() {
 
-  if (!user) {
+    /* ⭐ FIX: Correct way to get logged-in user */
+    const { data: sessionData } = await supabase.auth.getSession();
+    const user = sessionData?.session?.user;
+
+    if (!user) {
+      location.href = "signin.html";
+      return;
+    }
+
+    /* ⭐ Load user row from DB */
+    const { data, error } = await supabase
+      .from("UsersSQL")
+      .select("*")
+      .eq("email", user.email)
+      .single();
+
+    if (error || !data) {
+      alert("Error loading profile.");
+      return;
+    }
+
+    /* ⭐ Display DB Values */
+    document.getElementById("referralCode").textContent = data.referralcode;
+    document.getElementById("inviteLink").textContent =
+      `https://spinwintoken.com?invite=${data.referralcode}`;
+
+    document.getElementById("teamMembers").textContent = data.teammembers;
+    document.getElementById("teamTokenPurchased").textContent = data.teamtokenpurchased;
+    document.getElementById("teamTokenAvailable").textContent = data.teamtokenavailable;
+    document.getElementById("spinWinToken").textContent = data.spinwintoken;
+  }
+
+  function copyInvite() {
+    const link = document.getElementById("inviteLink").textContent;
+    navigator.clipboard.writeText(link);
+    alert("Invitation link copied!");
+  }
+
+  async function signOut() {
+    await supabase.auth.signOut();
     location.href = "signin.html";
-    return;
   }
 
-  const { data, error } = await supabase
-    .from("UsersSQL")
-    .select("*")
-    .eq("email", user.email)
-    .single();
-
-  if (error || !data) {
-    alert("Error loading profile.");
-    return;
-  }
-
-  document.getElementById("referralCode").textContent = data.referralcode;
-  document.getElementById("inviteLink").textContent =
-    `https://spinwintoken.com?invite=${data.referralcode}`;
-
-  document.getElementById("teamMembers").textContent = data.teammembers;
-  document.getElementById("teamTokenPurchased").textContent = data.teamtokenpurchased;
-  document.getElementById("teamTokenAvailable").textContent = data.teamtokenavailable;
-  document.getElementById("spinWinToken").textContent = data.spinwintoken;
-
-};
-
-function copyInvite() {
-  const link = document.getElementById("inviteLink").textContent;
-  navigator.clipboard.writeText(link);
-  alert("Invitation link copied!");
-}
-
-async function signOut() {
-  await supabase.auth.signOut();
-  location.href = "signin.html";
-}
+  loadProfile();
 </script>
 
 </body>
