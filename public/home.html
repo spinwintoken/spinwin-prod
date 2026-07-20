@@ -145,7 +145,10 @@
 <!-- COUNTDOWN -->
 <div class="countdown-box">
   <div class="countdown-title">Spin Win Starts In</div>
+
+  <!-- ⭐ TIMER DISPLAY ⭐ -->
   <div id="timer" class="timer"></div>
+
   <div class="countdown-info">
     Eastern Standard Time (ET)<br>
     Monday 8am • Thursday 8pm<br>
@@ -214,14 +217,14 @@
     document.getElementById("h4").textContent = "Section Header 4";
     document.getElementById("p1").textContent =
       "This is a paragraph of information for the " + name +
-      " section. You can place any text here to explain features, rules, or instructions.";
+      " section.";
   }
 
   function closePage() {
     document.getElementById("popup").style.display = "none";
   }
 
-  /* RESTORED COUNTDOWN TIMER */
+  /* ⭐ RESTORED COUNTDOWN TIMER ⭐ */
   function updateTimer() {
     const now = new Date();
 
@@ -260,6 +263,7 @@
 
 </body>
 </html>
+
 
 
 
