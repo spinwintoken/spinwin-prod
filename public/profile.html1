@@ -126,6 +126,29 @@
     "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
   );
 
+  /* ⭐ NEW TEAM MEMBER SEARCH LOGIC ⭐ */
+  async function computeTeamMembers(referralCode) {
+
+    const { data: rows, error } = await supabase
+      .from("UsersSQL")
+      .select("teammembers")
+      .eq("referred_by", referralCode);
+
+    if (error || !rows || rows.length === 0) {
+      return 0; // no team members found
+    }
+
+    const nums = rows
+      .map(r => Number(r.teammembers))
+      .filter(v => !Number.isNaN(v));
+
+    if (nums.length === 0) {
+      return 0;
+    }
+
+    return Math.max(...nums); // highest teammembers value
+  }
+
   async function loadProfile() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -148,7 +171,11 @@
     document.getElementById("inviteLink").textContent =
       `https://spinwintoken.com?invite=${data.referralcode}`;
 
-    document.getElementById("teamMembers").textContent = data.teammembers;
+    /* ⭐ APPLY NEW TEAM MEMBER LOGIC ⭐ */
+    const teamMemberValue = await computeTeamMembers(data.referralcode);
+    document.getElementById("teamMembers").textContent = teamMemberValue;
+
+    /* ⭐ KEEP YOUR ORIGINAL VALUES ⭐ */
     document.getElementById("teamTokenPurchased").textContent = data.teamtokenpurchased;
     document.getElementById("teamTokenAvailable").textContent = data.teamtokenavailable;
     document.getElementById("spinWinToken").textContent = data.spinwintoken;
@@ -170,3 +197,4 @@
 
 </body>
 </html>
+
