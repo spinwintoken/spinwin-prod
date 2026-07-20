@@ -103,7 +103,6 @@
   <button class="signout-btn" onclick="signOut()">Sign Out</button>
 </div>
 
-<!-- ⭐ Navigation Bar with href links -->
 <div class="icon-row">
   <div class="icon-item" onclick="location.href='home.html'">🏠</div>
   <div class="icon-item" onclick="location.href='token.html'">🏅</div>
@@ -113,58 +112,52 @@
 </div>
 
 <script>
-  /* ⭐ Supabase Client */
+window.onload = async function() {
+
   const supabase = supabase.createClient(
     "https://zejhbfuuherovlxklrgy.supabase.co",
     "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
   );
 
-  /* ⭐ Load Profile Data */
-  async function loadProfile() {
-    const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-      location.href = "signin.html";
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("UsersSQL")
-      .select("*")
-      .eq("email", user.email)
-      .single();
-
-    if (error || !data) {
-      alert("Error loading profile.");
-      return;
-    }
-
-    /* ⭐ Display DB Values */
-    document.getElementById("referralCode").textContent = data.referralcode;
-
-    document.getElementById("inviteLink").textContent =
-      `https://spinwintoken.com?invite=${data.referralcode}`;
-
-    document.getElementById("teamMembers").textContent = data.teammembers;
-    document.getElementById("teamTokenPurchased").textContent = data.teamtokenpurchased;
-    document.getElementById("teamTokenAvailable").textContent = data.teamtokenavailable;
-    document.getElementById("spinWinToken").textContent = data.spinwintoken;
-  }
-
-  /* ⭐ Copy Invite Link */
-  function copyInvite() {
-    const link = document.getElementById("inviteLink").textContent;
-    navigator.clipboard.writeText(link);
-    alert("Invitation link copied!");
-  }
-
-  /* ⭐ Sign Out */
-  async function signOut() {
-    await supabase.auth.signOut();
+  if (!user) {
     location.href = "signin.html";
+    return;
   }
 
-  loadProfile();
+  const { data, error } = await supabase
+    .from("UsersSQL")
+    .select("*")
+    .eq("email", user.email)
+    .single();
+
+  if (error || !data) {
+    alert("Error loading profile.");
+    return;
+  }
+
+  document.getElementById("referralCode").textContent = data.referralcode;
+  document.getElementById("inviteLink").textContent =
+    `https://spinwintoken.com?invite=${data.referralcode}`;
+
+  document.getElementById("teamMembers").textContent = data.teammembers;
+  document.getElementById("teamTokenPurchased").textContent = data.teamtokenpurchased;
+  document.getElementById("teamTokenAvailable").textContent = data.teamtokenavailable;
+  document.getElementById("spinWinToken").textContent = data.spinwintoken;
+
+};
+
+function copyInvite() {
+  const link = document.getElementById("inviteLink").textContent;
+  navigator.clipboard.writeText(link);
+  alert("Invitation link copied!");
+}
+
+async function signOut() {
+  await supabase.auth.signOut();
+  location.href = "signin.html";
+}
 </script>
 
 </body>
