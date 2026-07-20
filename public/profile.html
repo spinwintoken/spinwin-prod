@@ -117,11 +117,16 @@ const supabase = supabase.createClient(
   "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
 );
 
-/* ⭐ Load profile ONLY when session is ready */
-supabase.auth.onAuthStateChange(async (event, session) => {
-  if (!session || !session.user) {
-    location.href = "signin.html";
-    return;
+/* ⭐ THIS FIXES EVERYTHING ⭐ */
+async function loadProfile() {
+
+  // Wait for Supabase session to fully restore
+  let session = null;
+
+  while (!session) {
+    const { data } = await supabase.auth.getSession();
+    session = data.session;
+    await new Promise(r => setTimeout(r, 50)); // wait 50ms
   }
 
   const user = session.user;
@@ -146,20 +151,20 @@ supabase.auth.onAuthStateChange(async (event, session) => {
   document.getElementById("teamTokenPurchased").textContent = data.teamtokenpurchased;
   document.getElementById("teamTokenAvailable").textContent = data.teamtokenavailable;
   document.getElementById("spinWinToken").textContent = data.spinwintoken;
-});
+}
 
-/* ⭐ Copy Invite Link */
 function copyInvite() {
   const link = document.getElementById("inviteLink").textContent;
   navigator.clipboard.writeText(link);
   alert("Invitation link copied!");
 }
 
-/* ⭐ Sign Out */
 async function signOut() {
   await supabase.auth.signOut();
   location.href = "signin.html";
 }
+
+loadProfile();
 </script>
 
 </body>
