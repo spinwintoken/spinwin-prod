@@ -112,45 +112,44 @@
 </div>
 
 <script>
-const supabase = supabase.createClient(
-  "https://zejhbfuuherovlxklrgy.supabase.co",
-  "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
-);
+const supabaseUrl = "https://zejhbfuuherovlxklrgy.supabase.co";
+const supabaseKey = "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ";
+const client = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-/* ⭐ THIS FIXES EVERYTHING ⭐ */
 async function loadProfile() {
 
-  // Wait for Supabase session to fully restore
+  /* ⭐ EXACT SAME SESSION LOGIC AS registerconfirm.html ⭐ */
   let session = null;
 
   while (!session) {
-    const { data } = await supabase.auth.getSession();
+    const { data } = await client.auth.getSession();
     session = data.session;
-    await new Promise(r => setTimeout(r, 50)); // wait 50ms
+    await new Promise(r => setTimeout(r, 50));
   }
 
-  const user = session.user;
+  const email = session.user.email;
 
-  const { data, error } = await supabase
+  /* ⭐ Load DB row */
+  const { data: userRow, error } = await client
     .from("UsersSQL")
     .select("*")
-    .eq("email", user.email)
+    .eq("email", email)
     .single();
 
-  if (error || !data) {
+  if (error || !userRow) {
     alert("Error loading profile.");
     return;
   }
 
-  /* ⭐ Display DB Values */
-  document.getElementById("referralCode").textContent = data.referralcode;
+  /* ⭐ Display DB values */
+  document.getElementById("referralCode").textContent = userRow.referralcode;
   document.getElementById("inviteLink").textContent =
-    `https://spinwintoken.com?invite=${data.referralcode}`;
+    `https://spinwintoken.com?invite=${userRow.referralcode}`;
 
-  document.getElementById("teamMembers").textContent = data.teammembers;
-  document.getElementById("teamTokenPurchased").textContent = data.teamtokenpurchased;
-  document.getElementById("teamTokenAvailable").textContent = data.teamtokenavailable;
-  document.getElementById("spinWinToken").textContent = data.spinwintoken;
+  document.getElementById("teamMembers").textContent = userRow.teammembers;
+  document.getElementById("teamTokenPurchased").textContent = userRow.teamtokenpurchased;
+  document.getElementById("teamTokenAvailable").textContent = userRow.teamtokenavailable;
+  document.getElementById("spinWinToken").textContent = userRow.spinwintoken;
 }
 
 function copyInvite() {
@@ -160,7 +159,7 @@ function copyInvite() {
 }
 
 async function signOut() {
-  await supabase.auth.signOut();
+  await client.auth.signOut();
   location.href = "signin.html";
 }
 
@@ -169,4 +168,5 @@ loadProfile();
 
 </body>
 </html>
+
 
