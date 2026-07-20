@@ -1,111 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
+<meta charset="UTF-8" />
+<title>Profile - SpinWinToken</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            margin: 0;
-            padding: 20px;
-        }
+<!-- SUPABASE JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        .block {
-            background: #fff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+<style>
+  body {
+    background:#000;
+    color:#ffd700;
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:0;
+    text-align:center;
+    padding-bottom:90px;
+  }
 
-        .title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
+  .block {
+    background:#111;
+    border:1px solid #ffd700;
+    border-radius:14px;
+    padding:20px;
+    width:90%;
+    max-width:420px;
+    margin:20px auto;
+    text-align:left;
+  }
 
-        .copy-btn {
-            background: #007bff;
-            color: #fff;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+  .title {
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:10px;
+    text-align:center;
+  }
 
-        .copy-btn:hover {
-            background: #0056b3;
-        }
+  .copy-btn {
+    background:#ffd700;
+    color:#000;
+    padding:8px 14px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    margin-top:10px;
+  }
 
-        .signout {
-            background: #d9534f;
-            color: #fff;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 18px;
-        }
+  .signout-btn {
+    background:#d9534f;
+    color:#fff;
+    padding:12px 20px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    width:100%;
+    font-size:18px;
+    margin-top:10px;
+  }
 
-        .signout:hover {
-            background: #c9302c;
-        }
-    </style>
-
-    <script>
-        function copyLink() {
-            const link = document.getElementById("inviteLink").innerText;
-            navigator.clipboard.writeText(link);
-            alert("Invitation link copied!");
-        }
-    </script>
+  /* BOTTOM NAV ICONS */
+  .icon-row {
+    position:fixed;
+    bottom:10px;
+    left:0;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:40px;
+  }
+  .icon-item {
+    font-size:26px;
+    opacity:0.9;
+    cursor:pointer;
+  }
+</style>
 </head>
 
 <body>
 
-    <!-- 1st Block -->
-    <div class="block">
-        <div class="title">Your Referral Information</div>
+<h1 style="margin-top:20px;">Profile 🧑</h1>
 
-        <p><strong>User ID / Referral Code:</strong> 
-            <span id="referralCode">{{referralcode_from_DB}}</span>
-        </p>
+<!-- BLOCK 1 -->
+<div class="block">
+  <div class="title">Referral Information</div>
 
-        <p><strong>Your Invitation Link:</strong></p>
-        <p id="inviteLink">https://spinwintoken.com?invite={{referralcode_from_DB}}</p>
+  <p><strong>User Referral Code:</strong> <span id="referralCode">Loading...</span></p>
 
-        <button class="copy-btn" onclick="copyLink()">Copy</button>
-    </div>
+  <p><strong>Your Invitation Link:</strong></p>
+  <p id="inviteLink">Loading...</p>
 
-    <!-- 2nd Block -->
-    <div class="block">
-        <div class="title">Team Members</div>
+  <button class="copy-btn" onclick="copyInvite()">Copy Link</button>
+</div>
 
-        <p><strong>Number of Team Members:</strong> 
-            <span id="teamMembers">{{teammembers_from_DB}}</span>
-        </p>
+<!-- BLOCK 2 -->
+<div class="block">
+  <div class="title">Team Members</div>
 
-        <p><strong>Team Tokens Purchased:</strong> 
-            <span id="tokensPurchased">{{tokens_purchased_from_DB}}</span>
-        </p>
+  <p><strong>Number of Team Members:</strong> <span id="teamMembers">Loading...</span></p>
 
-        <p><strong>Token Available for Purchase:</strong> 
-            <span id="tokensAvailable">{{tokens_available_from_DB}}</span>
-        </p>
+  <p><strong>Team Tokens Purchased:</strong> <span id="teamTokenPurchased">Loading...</span></p>
 
-        <p><strong>Token SPIN WIN:</strong> 
-            <span id="tokenSpinWin">{{token_spinwin_from_DB}}</span>
-        </p>
-    </div>
+  <p><strong>Token Available for Purchase:</strong> <span id="teamTokenAvailable">Loading...</span></p>
 
-    <!-- 3rd Block -->
-    <div class="block">
-        <button class="signout">Sign Out</button>
-    </div>
+  <p><strong>Token SPIN WIN:</strong> <span id="spinWinToken">Loading...</span></p>
+</div>
+
+<!-- BLOCK 3 -->
+<div class="block">
+  <button class="signout-btn" onclick="signOut()">Sign Out</button>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="icon-row">
+  <div class="icon-item" onclick="location.href='home.html'">🏠</div>
+  <div class="icon-item" onclick="location.href='token.html'">🏅</div>
+  <div class="icon-item" onclick="location.href='spinwheel.html'">🎡</div>
+  <div class="icon-item" onclick="location.href='bingo.html'">🎯</div>
+  <div class="icon-item" onclick="location.href='profile.html'">🧑</div>
+</div>
+
+<script>
+  const supabase = supabase.createClient(
+    "https://zejhbfuuherovlxklrgy.supabase.co",
+    "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
+  );
+
+  async function loadProfile() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      location.href = "signin.html";
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("UsersSQL")
+      .select("*")
+      .eq("email", user.email)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    document.getElementById("referralCode").textContent = data.referralcode;
+    document.getElementById("inviteLink").textContent =
+      `https://spinwintoken.com?invite=${data.referralcode}`;
+
+    document.getElementById("teamMembers").textContent = data.teammembers;
+    document.getElementById("teamTokenPurchased").textContent = data.teamtokenpurchased;
+    document.getElementById("teamTokenAvailable").textContent = data.teamtokenavailable;
+    document.getElementById("spinWinToken").textContent = data.spinwintoken;
+  }
+
+  function copyInvite() {
+    const link = document.getElementById("inviteLink").textContent;
+    navigator.clipboard.writeText(link);
+    alert("Invitation link copied!");
+  }
+
+  async function signOut() {
+    await supabase.auth.signOut();
+    location.href = "signin.html";
+  }
+
+  loadProfile();
+</script>
 
 </body>
 </html>
