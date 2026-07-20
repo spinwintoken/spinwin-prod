@@ -5,7 +5,6 @@
 <title>Profile - SpinWinToken</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<!-- SUPABASE JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -59,7 +58,6 @@
     margin-top:10px;
   }
 
-  /* BOTTOM NAV ICONS */
   .icon-row {
     position:fixed;
     bottom:10px;
@@ -81,37 +79,30 @@
 
 <h1 style="margin-top:20px;">Profile 🧑</h1>
 
-<!-- BLOCK 1 -->
 <div class="block">
   <div class="title">Referral Information</div>
 
-  <p><strong>User Referral Code:</strong> <span id="referralCode">Loading...</span></p>
+  <p><strong>Referral Code:</strong> <span id="referralCode"></span></p>
 
   <p><strong>Your Invitation Link:</strong></p>
-  <p id="inviteLink">Loading...</p>
+  <p id="inviteLink"></p>
 
   <button class="copy-btn" onclick="copyInvite()">Copy Link</button>
 </div>
 
-<!-- BLOCK 2 -->
 <div class="block">
   <div class="title">Team Members</div>
 
-  <p><strong>Number of Team Members:</strong> <span id="teamMembers">Loading...</span></p>
-
-  <p><strong>Team Tokens Purchased:</strong> <span id="teamTokenPurchased">Loading...</span></p>
-
-  <p><strong>Token Available for Purchase:</strong> <span id="teamTokenAvailable">Loading...</span></p>
-
-  <p><strong>Token SPIN WIN:</strong> <span id="spinWinToken">Loading...</span></p>
+  <p><strong>Team Members:</strong> <span id="teamMembers"></span></p>
+  <p><strong>Team Tokens Purchased:</strong> <span id="teamTokenPurchased"></span></p>
+  <p><strong>Token Available:</strong> <span id="teamTokenAvailable"></span></p>
+  <p><strong>SpinWin Token:</strong> <span id="spinWinToken"></span></p>
 </div>
 
-<!-- BLOCK 3 -->
 <div class="block">
   <button class="signout-btn" onclick="signOut()">Sign Out</button>
 </div>
 
-<!-- BOTTOM NAV -->
 <div class="icon-row">
   <div class="icon-item" onclick="location.href='home.html'">🏠</div>
   <div class="icon-item" onclick="location.href='token.html'">🏅</div>
@@ -139,10 +130,7 @@
       .eq("email", user.email)
       .single();
 
-    if (error) {
-      console.error(error);
-      return;
-    }
+    if (error) return;
 
     document.getElementById("referralCode").textContent = data.referralcode;
     document.getElementById("inviteLink").textContent =
@@ -170,3 +158,4 @@
 
 </body>
 </html>
+
