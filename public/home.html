@@ -65,27 +65,13 @@
       -10px -10px 20px rgba(255,255,255,0.05);
   }
 
-  /* COLORS */
-  .brick-big {
-    background:linear-gradient(145deg, #f7d44c, #fce88a, #fff4d1);
-  }
-  .brick-charity {
-    background:linear-gradient(145deg, #fff4d1, #ffe9a3, #f7d44c);
-  }
-  .brick-token {
-    background:linear-gradient(145deg, #ff5a5a, #ff8a8a, #ffd1d1);
-  }
-  .brick-spinwheel {
-    background:linear-gradient(145deg, #5ab8ff, #8cd3ff, #d1efff);
-  }
-  .brick-bingo {
-    background:linear-gradient(145deg, #6aff6a, #9aff9a, #d1ffd1);
-  }
-  .brick-profile {
-    background:linear-gradient(145deg, #c46aff, #d98aff, #f4d1ff);
-  }
+  .brick-big { background:linear-gradient(145deg,#f7d44c,#fce88a,#fff4d1); }
+  .brick-charity { background:linear-gradient(145deg,#fff4d1,#ffe9a3,#f7d44c); }
+  .brick-token { background:linear-gradient(145deg,#ff5a5a,#ff8a8a,#ffd1d1); }
+  .brick-spinwheel { background:linear-gradient(145deg,#5ab8ff,#8cd3ff,#d1efff); }
+  .brick-bingo { background:linear-gradient(145deg,#6aff6a,#9aff9a,#d1ffd1); }
+  .brick-profile { background:linear-gradient(145deg,#c46aff,#d98aff,#f4d1ff); }
 
-  /* FIRST ROW SPLIT INTO TWO */
   .brick-row-two {
     display:flex;
     justify-content:center;
@@ -124,7 +110,7 @@
 <!-- COUNTDOWN -->
 <div class="countdown-box">
   <div class="countdown-title">Spin Win Starts In</div>
-  <div id="timer" class="timer">Loading...</div>
+  <div id="timer" class="timer"></div>
   <div class="countdown-info">
     Eastern Standard Time (ET)<br>
     Monday 8am • Thursday 8pm<br>
@@ -149,7 +135,7 @@
 <div class="brick brick-bingo" onclick="location.href='bingo.html'">Bingo 🎯</div>
 <div class="brick brick-profile" onclick="location.href='profile.html'">Profile 🧑</div>
 
-<!-- BOTTOM ICON ROW -->
+<!-- BOTTOM NAV -->
 <div class="icon-row">
   <div class="icon-item" onclick="location.href='home.html'">🏠</div>
   <div class="icon-item" onclick="location.href='token.html'">🏅</div>
@@ -159,6 +145,7 @@
 </div>
 
 <script>
+  /* SUPABASE AUTH SESSION CHECK */
   const supabase = supabase.createClient(
     "https://zejhbfuuherovlxklrgy.supabase.co",
     "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
@@ -166,20 +153,21 @@
 
   async function checkUser() {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      location.href = "signin.html";
-    }
+    if (!user) location.href = "signin.html";
   }
 
   checkUser();
 
+  /* RESTORED COUNTDOWN TIMER */
   function updateTimer() {
     const now = new Date();
 
+    // Monday 8am ET
     const monday = new Date();
     monday.setDate(now.getDate() + ((1 - now.getDay() + 7) % 7));
     monday.setHours(8,0,0,0);
 
+    // Thursday 8pm ET
     const thursday = new Date();
     thursday.setDate(now.getDate() + ((4 - now.getDay() + 7) % 7));
     thursday.setHours(20,0,0,0);
@@ -209,5 +197,6 @@
 
 </body>
 </html>
+
 
 
