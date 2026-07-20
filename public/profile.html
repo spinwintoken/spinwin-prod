@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Profile - SpinWinToken</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  body {
+    background:#000;
+    color:#ffd700;
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:0;
+    text-align:center;
+    padding-bottom:90px;
+  }
+
+  .block {
+    background:#111;
+    border:1px solid #ffd700;
+    border-radius:14px;
+    padding:20px;
+    width:90%;
+    max-width:420px;
+    margin:20px auto;
+    text-align:left;
+  }
+
+  .title {
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:10px;
+    text-align:center;
+  }
+
+  .copy-btn {
+    background:#ffd700;
+    color:#000;
+    padding:8px 14px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    margin-top:10px;
+  }
+
+  /* ⭐ white text, centered, no background */
+  .signout-btn {
+    background:none;
+    color:#ffffff;
+    padding:0;
+    border:none;
+    cursor:pointer;
+    font-size:20px;
+    width:100%;
+    text-align:center;
+    margin-top:10px;
+  }
+
+  .icon-row {
+    position:fixed;
+    bottom:10px;
+    left:0;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:40px;
+  }
+  .icon-item {
+    font-size:26px;
+    opacity:0.9;
+    cursor:pointer;
+  }
+</style>
+</head>
+
+<body>
+
+<h1 style="margin-top:20px;">Profile 🧑</h1>
+
+<div class="block">
+  <div class="title">Referral Information</div>
+
+  <p><strong>Referral Code:</strong> <span id="referralCode"></span></p>
+
+  <p><strong>Your Invitation Link:</strong></p>
+  <p id="inviteLink"></p>
+
+  <button class="copy-btn" onclick="copyInvite()">Copy Link</button>
+</div>
+
+<div class="block">
+  <div class="title">Team Members</div>
+
+  <p><strong>Team Members:</strong> <span id="teamMembers"></span></p>
+  <p><strong>Team Tokens Purchased:</strong> <span id="teamTokenPurchased"></span></p>
+  <p><strong>Token Available:</strong> <span id="teamTokenAvailable"></span></p>
+  <p><strong>SpinWin Token:</strong> <span id="spinWinToken"></span></p>
+</div>
+
+<div class="block">
+  <button class="signout-btn" onclick="signOut()">Sign Out</button>
+</div>
+
+<div class="icon-row">
+  <div class="icon-item" onclick="location.href='home.html'">🏠</div>
+  <div class="icon-item" onclick="location.href='token.html'">🏅</div>
+  <div class="icon-item" onclick="location.href='spinwheel.html'">🎡</div>
+  <div class="icon-item" onclick="location.href='bingo.html'">🎯</div>
+  <div class="icon-item" onclick="location.href='profile.html'">🧑</div>
+</div>
+
+<script>
+const supabaseUrl = "https://zejhbfuuherovlxklrgy.supabase.co";
+const supabaseKey = "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ";
+const client = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+/* ⭐ TEAM MEMBER LOGIC (unchanged) ⭐ */
+async function computeTeamMembers(referralCode) {
+
+  const { data: rows, error } = await client
+    .from("UsersSQL")
+    .select("teammembers")
+    .eq("referred_by", referralCode);
+
+  if (error || !rows || rows.length === 0) {
+    return 0;
+  }
+
+  const nums = rows
+    .map(r => Number(r.teammembers))
+    .filter(v => Number.isFinite(v));
+
+  if (nums.length === 0) {
+    return 0;
+  }
+
+  return Math.max(...nums);
+}
+
+/* ⭐ FIXED: Always refresh data after sign-in or page reload ⭐ */
+client.auth.onAuthStateChange(async (event, session) => {
+  if (!session) {
+    location.href = "signin.html";
+    return;
+  }
+
+  loadProfile(session.user.email);
+});
+
+/* ⭐ LOAD PROFILE (unchanged except email removed) ⭐ */
+async function loadProfile(email) {
+
+  const { data: userRow, error } = await client
+    .from("UsersSQL")
+    .select("*")
+    .eq("email", email)
+    .single();
+
+  if (error || !userRow) {
+    alert("Error loading profile.");
+    return;
+  }
+
+  document.getElementById("referralCode").textContent = userRow.referralcode;
+
+  document.getElementById("inviteLink").textContent =
+    `https://spinwintoken.com?invite=${userRow.referralcode}`;
+
+  const teamMemberValue = await computeTeamMembers(userRow.referralcode);
+  document.getElementById("teamMembers").textContent = teamMemberValue;
+
+  document.getElementById("teamTokenPurchased").textContent = userRow.teamtokenpurchased;
+  document.getElementById("teamTokenAvailable").textContent = userRow.teamtokenavailable;
+  document.getElementById("spinWinToken").textContent = userRow.spinwintoken;
+}
+
+function copyInvite() {
+  const link = document.getElementById("inviteLink").textContent;
+  navigator.clipboard.writeText(link);
+  alert("Invitation link copied!");
+}
+
+async function signOut() {
+  await client.auth.signOut();
+  location.href = "signin.html";
+}
+</script>
+
+</body>
+</html>
