@@ -83,6 +83,21 @@
   <div class="title">Referral Information</div>
 
   <p><strong>Email:</strong> <span id="emailDisplay"></span></p>
+  <p><strong>Referral Code:</strong> <span id="referralCode"></span></p>
+
+  <p><strong>Your Invitation Link:</strong></p>
+  <p id="inviteLink"></p>
+
+  <button class="copy-btn" onclick="copyInvite()">Copy Link</button>
+</div>
+
+<div class="block">
+  <div class="title">Team Members</div>
+
+  <p><strong>Team Members:</strong> <span id="teamMembers"></span></p>
+  <p><strong>Team Tokens Purchased:</strong> <span id="teamTokenPurchased"></span></p>
+  <p><strong>Token Available:</strong> <span id="teamTokenAvailable"></span></p>
+  <p><strong>SpinWin Token:</strong> <span id="spinWinToken"></span></p>
 </div>
 
 <div class="block">
@@ -104,7 +119,7 @@ const client = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 async function loadProfile() {
 
-  /* ⭐ EXACT SAME SESSION LOGIC AS registerconfirm.html ⭐ */
+  /* ⭐ SAME WORKING SESSION LOGIC AS registerconfirm.html ⭐ */
   let session = null;
 
   while (!session) {
@@ -113,9 +128,37 @@ async function loadProfile() {
     await new Promise(r => setTimeout(r, 50)); // wait 50ms
   }
 
-  /* ⭐ Display ONLY the email */
   const email = session.user.email;
   document.getElementById("emailDisplay").textContent = email;
+
+  /* ⭐ Load DB row */
+  const { data: userRow, error } = await client
+    .from("UsersSQL")
+    .select("*")
+    .eq("email", email)
+    .single();
+
+  if (error || !userRow) {
+    alert("Error loading profile.");
+    return;
+  }
+
+  /* ⭐ Display ALL DB values */
+  document.getElementById("referralCode").textContent = userRow.referralcode;
+
+  document.getElementById("inviteLink").textContent =
+    `https://spinwintoken.com?invite=${userRow.referralcode}`;
+
+  document.getElementById("teamMembers").textContent = userRow.teammembers;
+  document.getElementById("teamTokenPurchased").textContent = userRow.teamtokenpurchased;
+  document.getElementById("teamTokenAvailable").textContent = userRow.teamtokenavailable;
+  document.getElementById("spinWinToken").textContent = userRow.spinwintoken;
+}
+
+function copyInvite() {
+  const link = document.getElementById("inviteLink").textContent;
+  navigator.clipboard.writeText(link);
+  alert("Invitation link copied!");
 }
 
 async function signOut() {
@@ -128,5 +171,6 @@ loadProfile();
 
 </body>
 </html>
+
 
 
