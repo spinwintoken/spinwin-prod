@@ -5,8 +5,6 @@
 <title>Home - SpinWinToken</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
   body {
     background:#000;
@@ -220,27 +218,17 @@
 </div>
 
 <script>
-  /* SUPABASE AUTH SESSION */
-  const supabase = supabase.createClient(
-    "https://zejhbfuuherovlxklrgy.supabase.co",
-    "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
-  );
-
-  async function checkUser() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) location.href = "signin.html";
-  }
-  checkUser();
-
-  /* POPUP */
   function openPage(name) {
     document.getElementById("popup").style.display = "flex";
+
     document.getElementById("h1").textContent = name;
     document.getElementById("h2").textContent = "Section Header 2";
     document.getElementById("h3").textContent = "Section Header 3";
     document.getElementById("h4").textContent = "Section Header 4";
+
     document.getElementById("p1").textContent =
-      "This is a paragraph of information for the " + name + " section.";
+      "This is a paragraph of information for the " + name +
+      " section. You can place any text here to explain features, rules, or instructions.";
   }
 
   function closePage() {
@@ -282,5 +270,23 @@
   updateTimer();
 </script>
 
+<!-- ⭐ SUPABASE AUTH SESSION ADDED HERE ⭐ -->
+<script>
+  const supabase = supabase.createClient(
+    "https://zejhbfuuherovlxklrgy.supabase.co",
+    "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
+  );
+
+  async function checkUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      location.href = "signin.html";
+    }
+  }
+
+  checkUser();
+</script>
+
 </body>
 </html>
+
