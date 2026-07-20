@@ -82,6 +82,7 @@
 <div class="block">
   <div class="title">Referral Information</div>
 
+  <p><strong>Email:</strong> <span id="emailDisplay"></span></p>
   <p><strong>Referral Code:</strong> <span id="referralCode"></span></p>
 
   <p><strong>Your Invitation Link:</strong></p>
@@ -128,6 +129,7 @@ async function loadProfile() {
   }
 
   const email = session.user.email;
+  document.getElementById("emailDisplay").textContent = email;
 
   /* ⭐ Load DB row */
   const { data: userRow, error } = await client
@@ -169,4 +171,5 @@ loadProfile();
 
 </body>
 </html>
+
 
