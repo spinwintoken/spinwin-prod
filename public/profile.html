@@ -118,10 +118,12 @@ async function loadTeamMemberValue(referralCode) {
   document.getElementById("teamMembers").textContent = highest;
 }
 
-/* ⭐ LOAD PROFILE ⭐ */
+/* ⭐ LOAD PROFILE (CORRECT SESSION LOGIC) ⭐ */
 async function loadProfile() {
 
   let session = null;
+
+  // Wait until Supabase restores the session
   while (!session) {
     const { data } = await client.auth.getSession();
     session = data.session;
@@ -130,6 +132,7 @@ async function loadProfile() {
 
   const email = session.user.email;
 
+  // Load user row
   const { data: userRow, error } = await client
     .from("UsersSQL")
     .select("*")
@@ -141,6 +144,7 @@ async function loadProfile() {
     return;
   }
 
+  // Load teammember value using referralcode
   await loadTeamMemberValue(userRow.referralcode);
 }
 
