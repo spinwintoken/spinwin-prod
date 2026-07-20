@@ -116,20 +116,42 @@ const supabaseUrl = "https://zejhbfuuherovlxklrgy.supabase.co";
 const supabaseKey = "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ";
 const client = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+/* ⭐ TEAM MEMBER LOGIC (FINAL & CORRECT) ⭐ */
+async function computeTeamMembers(referralCode) {
+
+  const { data: rows, error } = await client
+    .from("UsersSQL")
+    .select("teammembers")
+    .eq("referred_by", referralCode);
+
+  if (error || !rows || rows.length === 0) {
+    return 0; // no referred users
+  }
+
+  const nums = rows
+    .map(r => Number(r.teammembers))
+    .filter(v => Number.isFinite(v));
+
+  if (nums.length === 0) {
+    return 0;
+  }
+
+  return Math.max(...nums); // highest teammembers value
+}
+
+/* ⭐ LOAD PROFILE ⭐ */
 async function loadProfile() {
 
-  /* ⭐ SAME WORKING SESSION LOGIC AS registerconfirm.html ⭐ */
   let session = null;
 
   while (!session) {
     const { data } = await client.auth.getSession();
     session = data.session;
-    await new Promise(r => setTimeout(r, 50)); // wait 50ms
+    await new Promise(r => setTimeout(r, 50));
   }
 
   const email = session.user.email;
 
-  /* ⭐ Load DB row */
   const { data: userRow, error } = await client
     .from("UsersSQL")
     .select("*")
@@ -141,13 +163,16 @@ async function loadProfile() {
     return;
   }
 
-  /* ⭐ Display ALL DB values */
   document.getElementById("referralCode").textContent = userRow.referralcode;
 
   document.getElementById("inviteLink").textContent =
     `https://spinwintoken.com?invite=${userRow.referralcode}`;
 
-  document.getElementById("teamMembers").textContent = userRow.teammembers;
+  /* ⭐ APPLY LOGIC-BASED TEAM MEMBER VALUE ⭐ */
+  const teamMemberValue = await computeTeamMembers(userRow.referralcode);
+  document.getElementById("teamMembers").textContent = teamMemberValue;
+
+  /* ⭐ KEEP ORIGINAL VALUES ⭐ */
   document.getElementById("teamTokenPurchased").textContent = userRow.teamtokenpurchased;
   document.getElementById("teamTokenAvailable").textContent = userRow.teamtokenavailable;
   document.getElementById("spinWinToken").textContent = userRow.spinwintoken;
@@ -169,3 +194,4 @@ loadProfile();
 
 </body>
 </html>
+
