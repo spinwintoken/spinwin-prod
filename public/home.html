@@ -131,36 +131,48 @@
     document.getElementById("popup").style.display = "none";
   }
 
-  /* ⭐ FIXED 84-HOUR ET COUNTDOWN ⭐ */
+  /* FIXED 84-HOUR ET COUNTDOWN */
   function updateTimer() {
     const now = new Date();
 
-    // Convert to ET
     const nowET = new Date(
       now.toLocaleString("en-US", { timeZone: "America/New_York" })
     );
 
     const day = nowET.getDay(); // 0=Sun,1=Mon,...,4=Thu
+    const hour = nowET.getHours();
 
-    // Build Monday 8am ET
-    const mondayET = new Date(nowET);
-    mondayET.setDate(nowET.getDate() + ((1 - day + 7) % 7));
-    mondayET.setHours(8, 0, 0, 0);
+    let nextEventET = new Date(nowET);
 
-    // Build Thursday 8pm ET
-    const thursdayET = new Date(nowET);
-    thursdayET.setDate(nowET.getDate() + ((4 - day + 7) % 7));
-    thursdayET.setHours(20, 0, 0, 0);
+    // Helper to set next Thursday 20:00 ET of this week
+    function setThursday20() {
+      const daysToThu = (4 - day + 7) % 7;
+      nextEventET.setDate(nowET.getDate() + daysToThu);
+      nextEventET.setHours(20, 0, 0, 0);
+    }
 
-    let nextEventET;
+    // Helper to set next Monday 8:00 ET (always future)
+    function setNextMonday8() {
+      let daysToMon = (1 - day + 7) % 7;
+      if (daysToMon === 0) daysToMon = 7; // if today is Monday and past 8am, go to next Monday
+      nextEventET.setDate(nowET.getDate() + daysToMon);
+      nextEventET.setHours(8, 0, 0, 0);
+    }
 
-    if (nowET < mondayET) {
-      nextEventET = mondayET;
-    } else if (nowET >= mondayET && nowET < thursdayET) {
-      nextEventET = thursdayET;
+    if (day === 1 && hour < 8) {
+      // Monday before 8am → today 8am
+      nextEventET.setHours(8, 0, 0, 0);
+    } else if (
+      (day === 1 && hour >= 8) || // Monday after 8am
+      day === 2 ||                // Tuesday
+      day === 3 ||                // Wednesday
+      (day === 4 && hour < 20)    // Thursday before 8pm
+    ) {
+      // Between Monday 8am and Thursday 8pm → next event is Thursday 8pm
+      setThursday20();
     } else {
-      mondayET.setDate(mondayET.getDate() + 7);
-      nextEventET = mondayET;
+      // After Thursday 8pm or Fri/Sat/Sun → next Monday 8am
+      setNextMonday8();
     }
 
     const diff = nextEventET - nowET;
@@ -181,24 +193,24 @@
   updateTimer();
 </script>
 
-<!-- ⭐ SUPABASE AUTH + TOKENSQL LOGIC ⭐ -->
+<script src="https://unpkg.com/@supabase/supabase-js@2.47.1/dist/umd/supabase.min.js"></script>
 <script>
-  const supabase = supabase.createClient(
+  const supabaseClient = supabase.createClient(
     "https://zejhbfuuherovlxklrgy.supabase.co",
     "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
   );
 
   async function checkUser() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await supabaseClient.auth.getUser();
     if (!user) location.href = "signin.html";
   }
   checkUser();
 
-  /* ⭐ READ TokenSQL → if token3>=1000 → move 1000 to spinpooltoken ⭐ */
+  /* READ TokenSQL → if token3>=1000 → move 1000 to spinpooltoken */
   async function runSpinCycle() {
     console.log("⏳ Spin cycle triggered");
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from("TokenSQL")
       .select("*")
       .limit(1)
@@ -220,7 +232,7 @@
     const newToken3 = token3 - 1000;
     const newSpinpool = spinpool + 1000;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseClient
       .from("TokenSQL")
       .update({
         token3: newToken3,
@@ -240,5 +252,6 @@
 
 </body>
 </html>
+
 
 
