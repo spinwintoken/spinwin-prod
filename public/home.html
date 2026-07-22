@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Home - SpinWinToken</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+  body {
+    background:#000;
+    color:#ffd700;
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:0;
+    text-align:center;
+    padding-bottom:90px;
+  }
+
+  .logo-row {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:15px;
+    margin-top:20px;
+  }
+  .logo-icon {
+    font-size:60px;
+  }
+  .logo-title {
+    font-size:28px;
+    font-weight:bold;
+  }
+
+  .countdown-box {
+    margin-top:20px;
+    padding:20px;
+    background:#111;
+    border:1px solid #ffd700;
+    border-radius:10px;
+    width:90%;
+    max-width:420px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .countdown-title {
+    font-size:20px;
+  }
+  .timer {
+    font-size:32px;
+    font-weight:bold;
+    margin-top:10px;
+  }
+  .countdown-info {
+    margin-top:10px;
+    font-size:14px;
+  }
+
+  .brick {
+    flex:1;
+    margin:15px auto;
+    padding:25px;
+    border-radius:14px;
+    font-size:22px;
+    font-weight:bold;
+    cursor:pointer;
+    color:#000;
+    text-align:center;
+    width:90%;
+    max-width:420px;
+
+    box-shadow:
+      inset 0px 4px 10px rgba(255,255,255,0.4),
+      inset 0px -4px 10px rgba(0,0,0,0.5),
+      10px 10px 20px rgba(0,0,0,0.9),
+      -10px -10px 20px rgba(255,255,255,0.05);
+  }
+
+  .brick-big {
+    background:linear-gradient(145deg, #f7d44c, #fce88a, #fff4d1);
+  }
+  .brick-charity {
+    background:linear-gradient(145deg, #fff4d1, #ffe9a3, #f7d44c);
+  }
+  .brick-token {
+    background:linear-gradient(145deg, #ff5a5a, #ff8a8a, #ffd1d1);
+  }
+  .brick-spinwheel {
+    background:linear-gradient(145deg, #5ab8ff, #8cd3ff, #d1efff);
+  }
+  .brick-bingo {
+    background:linear-gradient(145deg, #6aff6a, #9aff9a, #d1ffd1);
+  }
+  .brick-profile {
+    background:linear-gradient(145deg, #c46aff, #d98aff, #f4d1ff);
+  }
+
+  .brick-row-two {
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    width:90%;
+    max-width:420px;
+    margin:20px auto;
+  }
+
+  .popup {
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.85);
+    color:#ffd700;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    padding:20px;
+    text-align:left;
+    backdrop-filter:blur(4px);
+    z-index:999;
+  }
+  .popup-box {
+    background:#111;
+    border:1px solid #ffd700;
+    border-radius:14px;
+    padding:25px;
+    width:85%;
+    max-width:420px;
+  }
+  .popup-close {
+    margin-top:20px;
+    font-size:16px;
+    padding:8px 14px;
+    background:#ffd700;
+    color:#000;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+  }
+
+  .icon-row {
+    position:fixed;
+    bottom:10px;
+    left:0;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:40px;
+  }
+  .icon-item {
+    font-size:26px;
+    opacity:0.9;
+    cursor:pointer;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="logo-row">
+  <div class="logo-icon">🎡</div>
+  <div class="logo-title">SPINWIN TOKEN</div>
+</div>
+
+<div class="countdown-box">
+  <div class="countdown-title">Spin Win Starts In</div>
+  <div id="timer" class="timer">Loading...</div>
+  <div class="countdown-info">
+    Eastern Standard Time (ET)<br>
+    Monday 8am • Thursday 8pm<br>
+    84‑hour cycle
+  </div>
+</div>
+
+<div class="brick-row-two">
+  <div class="brick brick-big" onclick="openPage('SPIN WIN TOKEN')">
+    SPIN WIN TOKEN 🏅
+  </div>
+
+  <div class="brick brick-charity" onclick="openPage('Charity')">
+    <br><small></small>
+  </div>
+</div>
+
+<div class="brick brick-token" onclick="openPage('Token')">Token 🏅</div>
+<div class="brick brick-spinwheel" onclick="openPage('Spin Wheel')">Spin Wheel 🎡</div>
+<div class="brick brick-bingo" onclick="openPage('Bingo')">Bingo 🎯</div>
+<div class="brick brick-profile" onclick="openPage('Profile')">Profile 🧑</div>
+
+<div id="popup" class="popup">
+  <div class="popup-box">
+    <h1 id="h1"></h1>
+    <h2 id="h2"></h2>
+    <h3 id="h3"></h3>
+    <h4 id="h4"></h4>
+    <p id="p1"></p>
+    <button class="popup-close" onclick="closePage()">✖</button>
+  </div>
+</div>
+
+<div class="icon-row">
+  <div class="icon-item" onclick="location.href='home.html'">🏠</div>
+  <div class="icon-item" onclick="location.href='token.html'">🏅</div>
+  <div class="icon-item" onclick="location.href='spinwheel.html'">🎡</div>
+  <div class="icon-item" onclick="location.href='bingo.html'">🎯</div>
+  <div class="icon-item" onclick="location.href='profile.html'">🧑</div>
+</div>
+
+<script>
+  function openPage(name) {
+    document.getElementById("popup").style.display = "flex";
+
+    document.getElementById("h1").textContent = name;
+    document.getElementById("h2").textContent = "Section Header 2";
+    document.getElementById("h3").textContent = "Section Header 3";
+    document.getElementById("h4").textContent = "Section Header 4";
+
+    document.getElementById("p1").textContent =
+      "This is a paragraph of information for the " + name +
+      " section. You can place any text here to explain features, rules, or instructions.";
+  }
+
+  function closePage() {
+    document.getElementById("popup").style.display = "none";
+  }
+
+  /* ⭐ CALL EDGE FUNCTION TO UPDATE TokenSQL ⭐ */
+  async function runTokenCycle() {
+    try {
+      await fetch("https://zejhbfuuherovlxklrgy.supabase.co/functions/v1/tokenCycle", {
+        method: "POST"
+      });
+      console.log("TokenSQL updated via Edge Function");
+    } catch (err) {
+      console.error("Error running token cycle:", err);
+    }
+  }
+
+  /* ⭐ COUNTDOWN TIMER ⭐ */
+  function updateTimer() {
+    const now = new Date();
+
+    const monday = new Date();
+    monday.setDate(now.getDate() + ((1 - now.getDay() + 7) % 7));
+    monday.setHours(8,0,0,0);
+
+    const thursday = new Date();
+    thursday.setDate(now.getDate() + ((4 - now.getDay() + 7) % 7));
+    thursday.setHours(20,0,0,0);
+
+    let nextEvent;
+
+    if (now < monday) nextEvent = monday;
+    else if (now < thursday) nextEvent = thursday;
+    else {
+      monday.setDate(monday.getDate() + 7);
+      nextEvent = monday;
+    }
+
+    const diff = nextEvent - now;
+
+    /* ⭐ When timer hits zero → update DB ⭐ */
+    if (diff <= 0) {
+      runTokenCycle();
+    }
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("timer").textContent =
+      `${hours}h ${minutes}m ${seconds}s`;
+  }
+
+  setInterval(updateTimer, 1000);
+  updateTimer();
+</script>
+
+<script>
+  const supabase = supabase.createClient(
+    "https://zejhbfuuherovlxklrgy.supabase.co",
+    "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
+  );
+
+  async function checkUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      location.href = "signin.html";
+    }
+  }
+
+  checkUser();
+</script>
+
+</body>
+</html>
