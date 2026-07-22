@@ -81,6 +81,7 @@
   }
   .icon-item { font-size:26px; opacity:0.9; cursor:pointer; }
 
+  /* REMOVE ARROWS INSIDE INPUT BOX */
   .input-box {
     padding:10px;
     width:140px;
@@ -89,6 +90,12 @@
     background:#222;
     color:#ffd700;
     text-align:center;
+    -moz-appearance: textfield;
+  }
+  .input-box::-webkit-inner-spin-button,
+  .input-box::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 </style>
 </head>
@@ -136,7 +143,7 @@
   </table>
 </div>
 
-<!-- ⭐ THIRD BLOCK — PURCHASE TOKENS -->
+<!-- PURCHASE TOKENS -->
 <div class="price-box">
   <div class="price-title">PURCHASE TOKENS</div>
 
@@ -147,23 +154,14 @@
   <div style="margin-top:20px;">
     <label style="font-size:16px;">Enter Token Amount</label><br><br>
 
-    <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
-      <input 
-        id="buyAmount"
-        type="number"
-        step="0.0001"
-        min="0.0005"
-        placeholder="0.0005"
-        class="input-box"
-      />
-
-      <div style="display:flex; flex-direction:column;">
-        <button onclick="increaseAmount()" 
-          style="background:#ffd700; border:none; padding:4px; cursor:pointer;">▲</button>
-        <button onclick="decreaseAmount()" 
-          style="background:#ffd700; border:none; padding:4px; cursor:pointer;">▼</button>
-      </div>
-    </div>
+    <input 
+      id="buyAmount"
+      type="number"
+      step="0.0001"
+      min="0.0005"
+      placeholder="0.0005"
+      class="input-box"
+    />
 
     <button onclick="buyTokens()" 
       style="margin-top:20px; padding:10px 20px; background:#ffd700; color:#000; border:none; border-radius:8px; cursor:pointer;">
@@ -172,7 +170,7 @@
   </div>
 </div>
 
-<!-- ⭐ FOURTH BLOCK — TEAM TOKEN PURCHASED -->
+<!-- TEAM TOKEN PURCHASED -->
 <div class="price-box">
   <div class="price-title">TEAM TOKEN PURCHASED</div>
 
@@ -190,7 +188,7 @@
   <div class="icon-item" onclick="location.href='profile.html'">🧑</div>
 </div>
 
-<!-- ⭐ FIXED 84-HOUR ET COUNTDOWN ⭐ -->
+<!-- COUNTDOWN SCRIPT -->
 <script>
   function updateTimer() {
     const now = new Date();
@@ -229,7 +227,7 @@
   updateTimer();
 </script>
 
-<!-- ⭐ SUPABASE + TOKENSQL + USERSQL ⭐ -->
+<!-- SUPABASE -->
 <script src="https://unpkg.com/@supabase/supabase-js@2.47.1/dist/umd/supabase.min.js"></script>
 <script>
   const supabaseClient = supabase.createClient(
@@ -244,13 +242,13 @@
   }
 
   async function loadTokenData() {
-    const { data, error } = await supabaseClient
+    const { data } = await supabaseClient
       .from("TokenSQL")
       .select("*")
       .limit(1)
       .maybeSingle();
 
-    if (error || !data) return;
+    if (!data) return;
 
     document.getElementById("priceindexValue").textContent = data.priceindex ?? "-";
     document.getElementById("token1Value").textContent = data.token1 ?? "-";
@@ -260,13 +258,13 @@
 
   async function loadTeamToken() {
     const user = await checkUser();
-    const { data, error } = await supabaseClient
+    const { data } = await supabaseClient
       .from("UsersSQL")
       .select("teamtoken")
       .eq("userid", user.id)
       .maybeSingle();
 
-    if (error || !data) return;
+    if (!data) return;
     document.getElementById("teamTokenValue").textContent = data.teamtoken ?? "-";
   }
 
@@ -274,19 +272,6 @@
   loadTeamToken();
 
   /* PURCHASE LOGIC */
-  function increaseAmount() {
-    let v = parseFloat(document.getElementById("buyAmount").value || "0.0005");
-    v += 0.0001;
-    document.getElementById("buyAmount").value = v.toFixed(4);
-  }
-
-  function decreaseAmount() {
-    let v = parseFloat(document.getElementById("buyAmount").value || "0.0005");
-    v -= 0.0001;
-    if (v < 0.0005) v = 0.0005;
-    document.getElementById("buyAmount").value = v.toFixed(4);
-  }
-
   function buyTokens() {
     const v = document.getElementById("buyAmount").value;
 
