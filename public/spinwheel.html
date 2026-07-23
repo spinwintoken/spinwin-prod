@@ -21,9 +21,19 @@
   .logo-title { font-size:28px; font-weight:bold; }
 
   .countdown-box {
-    margin-top:20px; padding:20px; background:#111; border:1px solid #ffd700;
-    border-radius:10px; width:90%; max-width:420px; margin-left:auto; margin-right:auto;
+    margin-top:20px;
+    padding:20px;
+    background:#111;
+    border:1px solid #ffd700;
+    border-radius:10px;
+    width:90%;
+    max-width:420px;
+    margin-left:auto;
+    margin-right:auto;
+    z-index:2;
+    position:relative;
   }
+
   .countdown-title { font-size:20px; }
   .timer { font-size:32px; font-weight:bold; margin-top:10px; }
   .countdown-info { margin-top:10px; font-size:14px; }
@@ -37,6 +47,8 @@
     border-top:30px solid red;
     margin:0 auto;
     margin-top:18px;
+    z-index:3;
+    position:relative;
   }
 
   canvas {
@@ -44,6 +56,8 @@
     background:#111;
     border:3px solid #ffd700;
     border-radius:50%;
+    z-index:1;
+    position:relative;
   }
 
   #spin-results {
@@ -59,9 +73,15 @@
   }
 
   .icon-row {
-    position:fixed; bottom:10px; left:0; width:100%;
-    display:flex; justify-content:center; gap:40px;
+    position:fixed;
+    bottom:10px;
+    left:0;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:40px;
   }
+
   .icon-item { font-size:26px; opacity:0.9; cursor:pointer; }
 </style>
 </head>
@@ -126,7 +146,7 @@ let spinning = false;
 let pauseTimer = false;
 
 /* ----------------------------------------------------------
-   DRAW WHEEL
+   DRAW WHEEL (RESTORED)
 ---------------------------------------------------------- */
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
@@ -162,8 +182,10 @@ function drawWheel(rotation=0) {
   }
 }
 
+drawWheel();
+
 /* ----------------------------------------------------------
-   FLASHING GLOW
+   FLASHING GLOW (RESTORED)
 ---------------------------------------------------------- */
 function flashSlice(index) {
   const slice = (2 * Math.PI) / wheelSlots.length;
@@ -194,10 +216,8 @@ function flashSlice(index) {
   }, 100);
 }
 
-drawWheel();
-
 /* ----------------------------------------------------------
-   SPIN ONE (NO REPEAT)
+   SPIN ONE (RESTORED)
 ---------------------------------------------------------- */
 function spinOne() {
   if (spinPool.length === 0) spinPool = [...wheelSlots];
@@ -208,7 +228,7 @@ function spinOne() {
 }
 
 /* ----------------------------------------------------------
-   ANIMATED SPIN
+   ANIMATED SPIN (RESTORED)
 ---------------------------------------------------------- */
 function animateSpin(targetValue) {
   return new Promise(resolve => {
@@ -246,7 +266,7 @@ function animateSpin(targetValue) {
 }
 
 /* ----------------------------------------------------------
-   DISPLAY RESULTS (RIGHT → LEFT)
+   DISPLAY RESULTS (RESTORED)
 ---------------------------------------------------------- */
 function updateResultsDisplay() {
   document.getElementById("spin-results").textContent =
@@ -254,7 +274,7 @@ function updateResultsDisplay() {
 }
 
 /* ----------------------------------------------------------
-   RUN 6 SPINS
+   RUN 6 SPINS (RESTORED)
 ---------------------------------------------------------- */
 async function runSpinWheel() {
   if (spinning) return;
@@ -281,7 +301,7 @@ async function runSpinWheel() {
 }
 
 /* ----------------------------------------------------------
-   TIMER
+   TIMER (FULLY RESTORED)
 ---------------------------------------------------------- */
 function updateTimer() {
   if (pauseTimer) return;
@@ -338,7 +358,7 @@ setInterval(updateTimer, 1000);
 updateTimer();
 
 /* ----------------------------------------------------------
-   TIMER ZERO → SPIN + PAUSE
+   TIMER ZERO → SPIN + PAUSE (RESTORED)
 ---------------------------------------------------------- */
 function onTimerZero() {
   pauseTimer = true;
@@ -354,3 +374,4 @@ function onTimerZero() {
 
 </body>
 </html>
+
