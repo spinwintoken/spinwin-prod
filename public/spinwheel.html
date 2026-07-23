@@ -20,45 +20,20 @@
   .logo-icon { font-size:60px; }
   .logo-title { font-size:28px; font-weight:bold; }
 
-  /* NEW: timer + bingo icon row */
-  .timer-bingo-row {
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:10px;
-    margin-top:20px;
+  .countdown-box {
+    margin-top:20px; padding:20px; background:#111; border:1px solid #ffd700;
+    border-radius:10px; width:90%; max-width:420px; margin-left:auto; margin-right:auto;
   }
+  .countdown-title { font-size:20px; }
+  .timer { font-size:32px; font-weight:bold; margin-top:10px; }
+  .countdown-info { margin-top:10px; font-size:14px; }
 
-  .timer-box {
-    width:50%;
-    background:#111;
-    border:1px solid #ffd700;
-    border-radius:10px;
-    padding:15px;
-  }
-
-  .timer { font-size:20px; font-weight:bold; margin-top:10px; }
-
-  .bingo-box {
-    width:50%;
-    background:#111;
-    border:1px solid #ffd700;
-    border-radius:10px;
-    padding:15px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-  }
-
-  .bingo-icon {
-    font-size:50px;
-  }
-
-  .spinpool-display {
-    margin-top:10px;
-    font-size:22px;
-    font-weight:bold;
-    color:#fff;
+  /* small token text bottom-right */
+  .token-info {
+    margin-top:6px;
+    font-size:12px;
+    text-align:right;
+    color:#ffd700;
   }
 
   /* ▼ POINTER TOUCHING WHEEL */
@@ -67,9 +42,9 @@
     height:0;
     border-left:20px solid transparent;
     border-right:20px solid transparent;
-    border-top:30px solid red;
+    border-top:30px solid red; /* ▼ points downward */
     margin:0 auto;
-    margin-top:18px;
+    margin-top:18px; /* pointer touching wheel */
   }
 
   canvas {
@@ -110,24 +85,18 @@
   <div class="logo-title">SPINWIN TOKEN</div>
 </div>
 
-<!-- NEW: timer + bingo icon -->
-<div class="timer-bingo-row">
-
-  <div class="timer-box">
-    <div class="countdown-title">Spin Wheel Starts In</div>
-    <div id="timer" class="timer">Loading...</div>
-    <div class="countdown-info">
-      Eastern Standard Time (ET)<br>
-      Monday 8am • Thursday 8pm<br>
-      84‑hour cycle
-    </div>
+<div class="countdown-box">
+  <div class="countdown-title">Spin Wheel Starts In</div>
+  <div id="timer" class="timer">Loading...</div>
+  <div class="countdown-info">
+    Eastern Standard Time (ET)<br>
+    Monday 8am • Thursday 8pm<br>
+    84‑hour cycle
   </div>
-
-  <div class="bingo-box">
-    <div class="bingo-icon">🎯</div>
-    <div id="spinpooltoken" class="spinpool-display">Token: --</div>
+  <!-- NEW: small Token display bottom-right -->
+  <div class="token-info">
+    Token: <span id="spinpooltoken">--</span>
   </div>
-
 </div>
 
 <div class="pointer"></div>
@@ -193,8 +162,6 @@ function drawWheel(rotation=0) {
   }
 }
 
-drawWheel();
-
 /* FLASHING GLOW */
 function flashSlice(index) {
   const slice = (2 * Math.PI) / wheelSlots.length;
@@ -224,6 +191,8 @@ function flashSlice(index) {
     if (count >= 10) clearInterval(flashInterval);
   }, 100);
 }
+
+drawWheel();
 
 /* SPIN ONE (NO REPEAT) */
 function spinOne() {
@@ -287,4 +256,145 @@ async function runSpinWheel() {
 
   for (let i = 0; i < 6; i++) {
     await new Promise(r => setTimeout(r, 3000));
+
+    const value = spinOne();
+    await animateSpin(value);
+
+    results.unshift(value);
+    updateResultsDisplay();
+  }
+
+  document.getElementById("bingo-display").textContent =
+    "BINGO: " + results.join("");
+
+  spinning = false;
+}
+
+/* TIMER */
+function updateTimer() {
+  if (pauseTimer) return;
+
+  const now = new Date();
+  const nowET = new Date(
+    now.toLocaleString("en-US", { timeZone: "America/New_York" })
+  );
+
+  const day = nowET.getDay();
+  const hour = nowET.getHours();
+
+  let nextEventET = new Date(nowET);
+
+  function setThursday20() {
+    const daysToThu = (4 - day + 7) % 7;
+    nextEventET.setDate(nowET.getDate() + daysToThu);
+    nextEventET.setHours(20, 0, 0, 0);
+  }
+
+  function setNextMonday8() {
+    let daysToMon = (1 - day + 7) % 7;
+    if (daysToMon === 0) daysToMon = 7;
+    nextEventET.setDate(nowET.getDate() + daysToMon);
+    nextEventET.setHours(8, 0, 0, 0);
+  }
+
+  if (day === 1 && hour < 8) {
+    nextEventET.setHours(8, 0, 0, 0);
+  } else if (
+    (day === 1 && hour >= 8) ||
+    day === 2 ||
+    day === 3 ||
+    (day === 4 && hour < 20)
+  ) {
+    setThursday20();
+  } else {
+    setNextMonday8();
+  }
+
+  const diff = nextEventET - nowET;
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+
+  document.getElementById("timer").textContent =
+    `${hours}h ${minutes}m ${seconds}s`;
+
+  if (diff <= 1000) onTimerZero();
+}
+
+setInterval(updateTimer, 1000);
+updateTimer();
+
+/* TIMER ZERO → SPIN + PAUSE */
+function onTimerZero() {
+  pauseTimer = true;
+
+  runSpinWheel();
+
+  setTimeout(() => {
+    pauseTimer = false;
+    updateTimer();
+  }, 20000);
+}
+
+/* ----------------------------------------------------------
+   EXTRA LOGIC: BingoSQL + TokenSQL (no DB calls yet)
+---------------------------------------------------------- */
+
+function computeBingoPayout(crypto_wallet_id, spinpooltoken) {
+  const w = crypto_wallet_id.toString();
+
+  const b1 = w.at(-1)  || null;
+  const b2 = w.at(-2) || null;
+  const b3 = w.at(-3) || null;
+  const b4 = w.at(-4) || null;
+  const b5 = w.at(-5) || null;
+  const b6 = w.at(-6) || null;
+
+  const pct_3  = spinpooltoken * 0.03;
+  const pct_6  = spinpooltoken * 0.06;
+  const pct_9  = spinpooltoken * 0.09;
+  const pct_12 = spinpooltoken * 0.12;
+  const pct_15 = spinpooltoken * 0.15;
+  const pct_18 = spinpooltoken * 0.18;
+
+  const allNonZero =
+    pct_3  !== 0 &&
+    pct_6  !== 0 &&
+    pct_9  !== 0 &&
+    pct_12 !== 0 &&
+    pct_15 !== 0 &&
+    pct_18 !== 0;
+
+  const pct_7 = allNonZero ? spinpooltoken * 0.07 : 0;
+
+  const spinpool30       = spinpooltoken * 0.30;
+  const newSpinpoolToken = spinpool30 + 2500;
+  const token3           = newSpinpoolToken - 2500;
+
+  return {
+    bingos: { b1, b2, b3, b4, b5, b6 },
+    pct_3,
+    pct_6,
+    pct_9,
+    pct_12,
+    pct_15,
+    pct_18,
+    pct_7,
+    spinpool30,
+    newSpinpoolToken,
+    token3
+  };
+}
+
+/* ----------------------------------------------------------
+   Token display placeholder (replace with real TokenSQL)
+---------------------------------------------------------- */
+
+let spinpooltokenValue = 12345; // placeholder for TokenSQL value
+document.getElementById("spinpooltoken").textContent = spinpooltokenValue;
+</script>
+
+</body>
+</html>
 
