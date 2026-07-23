@@ -259,19 +259,20 @@
 <script>
 
   /* ⭐ SAME CLIENT AS HOME.HTML — THIS FIXES DB DISPLAY ⭐ */
-  const supabase = supabase.createClient(
+  const { createClient } = supabase;
+  const supabaseClient = createClient(
     "https://zejhbfuuherovlxklrgy.supabase.co",
     "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
   );
 
   async function checkUser() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await supabaseClient.auth.getUser();
     if (!user) location.href = "signin.html";
     return user;
   }
 
   async function loadTokenData() {
-    const { data } = await supabase
+    const { data } = await supabaseClient
       .from("TokenSQL")
       .select("*")
       .limit(1)
@@ -286,7 +287,7 @@
 
   async function loadTeamToken() {
     const user = await checkUser();
-    const { data } = await supabase
+    const { data } = await supabaseClient
       .from("UsersSQL")
       .select("teamtoken")
       .eq("userid", user.id)
