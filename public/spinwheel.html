@@ -28,21 +28,22 @@
   .timer { font-size:32px; font-weight:bold; margin-top:10px; }
   .countdown-info { margin-top:10px; font-size:14px; }
 
-  canvas {
-    margin-top:40px;
-    background:#111;
-    border:3px solid #ffd700;
-    border-radius:50%;
-  }
-
+  /* ▼ FIXED POINTER (points downward into slice) */
   .pointer {
     width:0;
     height:0;
     border-left:20px solid transparent;
     border-right:20px solid transparent;
-    border-bottom:30px solid red;
+    border-top:30px solid red; /* ▼ */
     margin:0 auto;
     margin-top:10px;
+  }
+
+  canvas {
+    margin-top:40px;
+    background:#111;
+    border:3px solid #ffd700;
+    border-radius:50%;
   }
 
   #spin-results {
@@ -122,7 +123,7 @@ const radius = 160;
 function drawWheel(rotation=0) {
   const slice = (2 * Math.PI) / wheelSlots.length;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height); /* FIX: remove debug text */
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   for (let i = 0; i < wheelSlots.length; i++) {
     const start = i * slice + rotation;
