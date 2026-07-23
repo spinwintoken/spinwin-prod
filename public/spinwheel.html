@@ -21,19 +21,9 @@
   .logo-title { font-size:28px; font-weight:bold; }
 
   .countdown-box {
-    margin-top:20px;
-    padding:20px;
-    background:#111;
-    border:1px solid #ffd700;
-    border-radius:10px;
-    width:90%;
-    max-width:420px;
-    margin-left:auto;
-    margin-right:auto;
-    z-index:2;
-    position:relative;
+    margin-top:20px; padding:20px; background:#111; border:1px solid #ffd700;
+    border-radius:10px; width:90%; max-width:420px; margin-left:auto; margin-right:auto;
   }
-
   .countdown-title { font-size:20px; }
   .timer { font-size:32px; font-weight:bold; margin-top:10px; }
   .countdown-info { margin-top:10px; font-size:14px; }
@@ -44,11 +34,9 @@
     height:0;
     border-left:20px solid transparent;
     border-right:20px solid transparent;
-    border-top:30px solid red;
+    border-top:30px solid red; /* ▼ points downward */
     margin:0 auto;
-    margin-top:18px;
-    z-index:3;
-    position:relative;
+    margin-top:18px; /* pointer touching wheel */
   }
 
   canvas {
@@ -56,8 +44,6 @@
     background:#111;
     border:3px solid #ffd700;
     border-radius:50%;
-    z-index:1;
-    position:relative;
   }
 
   #spin-results {
@@ -73,15 +59,9 @@
   }
 
   .icon-row {
-    position:fixed;
-    bottom:10px;
-    left:0;
-    width:100%;
-    display:flex;
-    justify-content:center;
-    gap:40px;
+    position:fixed; bottom:10px; left:0; width:100%;
+    display:flex; justify-content:center; gap:40px;
   }
-
   .icon-item { font-size:26px; opacity:0.9; cursor:pointer; }
 </style>
 </head>
@@ -124,16 +104,14 @@
 
 <script>
 /* ----------------------------------------------------------
-   SUPABASE CLIENT (SAFE PLACEHOLDERS)
+   SUPABASE PLACEHOLDERS
 ---------------------------------------------------------- */
 const supabaseClient = supabase.createClient(
   "YOUR_SUPABASE_URL",
   "YOUR_SUPABASE_KEY"
 );
 
-/* ----------------------------------------------------------
-   62 SLOTS
----------------------------------------------------------- */
+/* 62 SLOTS */
 const wheelSlots = [
   ...Array.from({length:26}, (_,i)=>String.fromCharCode(65+i)),
   ...Array.from({length:26}, (_,i)=>String.fromCharCode(97+i)),
@@ -145,9 +123,7 @@ let results = [];
 let spinning = false;
 let pauseTimer = false;
 
-/* ----------------------------------------------------------
-   DRAW WHEEL (RESTORED)
----------------------------------------------------------- */
+/* DRAW WHEEL */
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 const radius = 160;
@@ -182,11 +158,7 @@ function drawWheel(rotation=0) {
   }
 }
 
-drawWheel();
-
-/* ----------------------------------------------------------
-   FLASHING GLOW (RESTORED)
----------------------------------------------------------- */
+/* FLASHING GLOW */
 function flashSlice(index) {
   const slice = (2 * Math.PI) / wheelSlots.length;
   const start = index * slice;
@@ -216,9 +188,9 @@ function flashSlice(index) {
   }, 100);
 }
 
-/* ----------------------------------------------------------
-   SPIN ONE (RESTORED)
----------------------------------------------------------- */
+drawWheel();
+
+/* SPIN ONE (NO REPEAT) */
 function spinOne() {
   if (spinPool.length === 0) spinPool = [...wheelSlots];
   const index = Math.floor(Math.random() * spinPool.length);
@@ -227,9 +199,7 @@ function spinOne() {
   return value;
 }
 
-/* ----------------------------------------------------------
-   ANIMATED SPIN (RESTORED)
----------------------------------------------------------- */
+/* ANIMATED SPIN */
 function animateSpin(targetValue) {
   return new Promise(resolve => {
     let angle = 0;
@@ -265,17 +235,13 @@ function animateSpin(targetValue) {
   });
 }
 
-/* ----------------------------------------------------------
-   DISPLAY RESULTS (RESTORED)
----------------------------------------------------------- */
+/* DISPLAY RESULTS */
 function updateResultsDisplay() {
   document.getElementById("spin-results").textContent =
     results.join("   ");
 }
 
-/* ----------------------------------------------------------
-   RUN 6 SPINS (RESTORED)
----------------------------------------------------------- */
+/* RUN 6 SPINS */
 async function runSpinWheel() {
   if (spinning) return;
   spinning = true;
@@ -290,7 +256,7 @@ async function runSpinWheel() {
     const value = spinOne();
     await animateSpin(value);
 
-    results.unshift(value);
+    results.unshift(value); // right → left
     updateResultsDisplay();
   }
 
@@ -298,11 +264,15 @@ async function runSpinWheel() {
     "BINGO: " + results.join("");
 
   spinning = false;
+
+  // EXAMPLE: after spins, you could call payout logic
+  // const cryptoWalletId = 123456789012345n; // replace with real wallet id
+  // const spinpoolToken = 10000;            // replace with real TokenSQL value
+  // const payout = computeBingoPayout(cryptoWalletId, spinpoolToken);
+  // console.log(payout);
 }
 
-/* ----------------------------------------------------------
-   TIMER (FULLY RESTORED)
----------------------------------------------------------- */
+/* TIMER */
 function updateTimer() {
   if (pauseTimer) return;
 
@@ -357,9 +327,7 @@ function updateTimer() {
 setInterval(updateTimer, 1000);
 updateTimer();
 
-/* ----------------------------------------------------------
-   TIMER ZERO → SPIN + PAUSE (RESTORED)
----------------------------------------------------------- */
+/* TIMER ZERO → SPIN + PAUSE */
 function onTimerZero() {
   pauseTimer = true;
 
@@ -370,8 +338,90 @@ function onTimerZero() {
     updateTimer();
   }, 20000);
 }
+
+/* ----------------------------------------------------------
+   BINGO PAYOUT LOGIC (BingoSQL)
+---------------------------------------------------------- */
+/*
+Table public."BingoSQL":
+  crypto_wallet_id BIGINT NOT NULL,
+  pct_7, pct_18, pct_15, pct_12, pct_9, pct_6, pct_3 NUMERIC(10,3),
+  total_spins, total_bingos, last_bingo_at, created_at, updated_at
+*/
+
+function computeBingoPayout(cryptoWalletId, spinpoolToken) {
+  const w = cryptoWalletId.toString();
+
+  const b1 = w.at(-1)  || null; // 1st from right
+  const b2 = w.at(-2) || null;  // 2nd from right
+  const b3 = w.at(-3) || null;  // 3rd from right
+  const b4 = w.at(-4) || null;  // 4th from right
+  const b5 = w.at(-5) || null;  // 5th from right
+  const b6 = w.at(-6) || null;  // 6th from right
+
+  const pct_3  = spinpoolToken * 0.03;  // 1st bingo
+  const pct_6  = spinpoolToken * 0.06;  // 2nd bingo
+  const pct_9  = spinpoolToken * 0.09;  // 3rd bingo
+  const pct_12 = spinpoolToken * 0.12;  // 4th bingo
+  const pct_15 = spinpoolToken * 0.15;  // 5th bingo
+  const pct_18 = spinpoolToken * 0.18;  // 6th bingo
+
+  // If all six pct_* are non-zero → 7% bonus
+  const pct_7 = (pct_3 && pct_6 && pct_9 && pct_12 && pct_15 && pct_18)
+    ? spinpoolToken * 0.07
+    : 0;
+
+  // spinpooltoken minus 70% = 30%
+  const spinpool30 = spinpoolToken * 0.30;
+
+  // spinpooltoken 30% + 2500 = new spinpooltoken (TokenSQL)
+  const newSpinpoolToken = spinpool30 + 2500;
+
+  // token3 - 2500 (TokenSQL)
+  const token3 = newSpinpoolToken - 2500;
+
+  return {
+    bingos: { b1, b2, b3, b4, b5, b6 },
+    pct_3,
+    pct_6,
+    pct_9,
+    pct_12,
+    pct_15,
+    pct_18,
+    pct_7,
+    spinpool30,
+    newSpinpoolToken,
+    token3
+  };
+}
+
+// Example stub to update BingoSQL (you can wire this to Supabase)
+/*
+async function updateBingoSQL(cryptoWalletId, spinpoolToken) {
+  const p = computeBingoPayout(cryptoWalletId, spinpoolToken);
+
+  const { data, error } = await supabaseClient
+    .from("BingoSQL")
+    .update({
+      pct_3:  p.pct_3,
+      pct_6:  p.pct_6,
+      pct_9:  p.pct_9,
+      pct_12: p.pct_12,
+      pct_15: p.pct_15,
+      pct_18: p.pct_18,
+      pct_7:  p.pct_7,
+      total_bingos: 6,
+      last_bingo_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    })
+    .eq("crypto_wallet_id", cryptoWalletId);
+
+  console.log(data, error);
+}
+*/
 </script>
 
 </body>
 </html>
+
 
