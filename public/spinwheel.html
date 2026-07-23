@@ -28,7 +28,6 @@
   .timer { font-size:32px; font-weight:bold; margin-top:10px; }
   .countdown-info { margin-top:10px; font-size:14px; }
 
-  /* SPIN WHEEL */
   canvas {
     margin-top:40px;
     background:#111;
@@ -87,13 +86,10 @@
   </div>
 </div>
 
-<!-- TOP POINTER -->
 <div class="pointer"></div>
 
-<!-- REAL SPIN WHEEL -->
 <canvas id="wheel" width="320" height="320"></canvas>
 
-<!-- RESULTS -->
 <div id="spin-results">-- -- -- -- -- --</div>
 <div id="bingo-display"></div>
 
@@ -106,9 +102,7 @@
 </div>
 
 <script>
-/* ----------------------------------------------------------
-   62 SLOT WHEEL (A–Z, a–z, 0–9)
----------------------------------------------------------- */
+/* 62 SLOTS */
 const wheelSlots = [
   ...Array.from({length:26}, (_,i)=>String.fromCharCode(65+i)),
   ...Array.from({length:26}, (_,i)=>String.fromCharCode(97+i)),
@@ -120,9 +114,7 @@ let results = [];
 let spinning = false;
 let pauseTimer = false;
 
-/* ----------------------------------------------------------
-   DRAW WHEEL (A+B equal slices + different colors)
----------------------------------------------------------- */
+/* DRAW WHEEL */
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 const radius = 160;
@@ -155,9 +147,7 @@ function drawWheel(rotation=0) {
   }
 }
 
-/* ----------------------------------------------------------
-   FLASHING GLOW EFFECT
----------------------------------------------------------- */
+/* FLASHING GLOW */
 function flashSlice(index) {
   const slice = (2 * Math.PI) / wheelSlots.length;
   const start = index * slice;
@@ -189,9 +179,7 @@ function flashSlice(index) {
 
 drawWheel();
 
-/* ----------------------------------------------------------
-   SPIN ONE (no repeat)
----------------------------------------------------------- */
+/* SPIN ONE (NO REPEAT) */
 function spinOne() {
   if (spinPool.length === 0) spinPool = [...wheelSlots];
   const index = Math.floor(Math.random() * spinPool.length);
@@ -200,9 +188,7 @@ function spinOne() {
   return value;
 }
 
-/* ----------------------------------------------------------
-   ANIMATED SPIN
----------------------------------------------------------- */
+/* ANIMATED SPIN */
 function animateSpin(targetValue) {
   return new Promise(resolve => {
     let angle = 0;
@@ -211,10 +197,8 @@ function animateSpin(targetValue) {
     const targetIndex = wheelSlots.indexOf(targetValue);
     const slice = (2 * Math.PI) / wheelSlots.length;
 
-    // pointer at CENTER of slice
     const targetAngle = (2 * Math.PI * 4) + (slice * targetIndex);
 
-    // play spin sound
     document.getElementById("spinSound").play();
 
     function frame() {
@@ -226,10 +210,8 @@ function animateSpin(targetValue) {
       if (angle >= targetAngle) {
         drawWheel(angle);
 
-        // play win sound
         document.getElementById("winSound").play();
 
-        // flashing glow
         flashSlice(targetIndex);
 
         resolve();
@@ -242,17 +224,13 @@ function animateSpin(targetValue) {
   });
 }
 
-/* ----------------------------------------------------------
-   DISPLAY RESULTS (right → left)
----------------------------------------------------------- */
+/* DISPLAY RESULTS */
 function updateResultsDisplay() {
   document.getElementById("spin-results").textContent =
     results.join("   ");
 }
 
-/* ----------------------------------------------------------
-   RUN 6 SPINS
----------------------------------------------------------- */
+/* RUN 6 SPINS */
 async function runSpinWheel() {
   if (spinning) return;
   spinning = true;
@@ -277,9 +255,7 @@ async function runSpinWheel() {
   spinning = false;
 }
 
-/* ----------------------------------------------------------
-   TIMER (same as home.html)
----------------------------------------------------------- */
+/* TIMER */
 function updateTimer() {
   if (pauseTimer) return;
 
@@ -334,9 +310,7 @@ function updateTimer() {
 setInterval(updateTimer, 1000);
 updateTimer();
 
-/* ----------------------------------------------------------
-   TIMER ZERO → spin + pause 20 sec
----------------------------------------------------------- */
+/* TIMER ZERO → SPIN + PAUSE */
 function onTimerZero() {
   pauseTimer = true;
 
@@ -351,4 +325,10 @@ function onTimerZero() {
 
 </body>
 </html>
+
+
+function drawWheel(rotation=0) {
+  const slice = (2 * Math.PI) / wheelSlots.length;
+
+  for (let i =
 
