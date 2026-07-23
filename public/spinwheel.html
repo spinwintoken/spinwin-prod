@@ -103,9 +103,7 @@
 </div>
 
 <script>
-/* ----------------------------------------------------------
-   SUPABASE PLACEHOLDERS
----------------------------------------------------------- */
+/* SUPABASE PLACEHOLDERS */
 const supabaseClient = supabase.createClient(
   "YOUR_SUPABASE_URL",
   "YOUR_SUPABASE_KEY"
@@ -264,12 +262,6 @@ async function runSpinWheel() {
     "BINGO: " + results.join("");
 
   spinning = false;
-
-  // EXAMPLE: after spins, you could call payout logic
-  // const cryptoWalletId = 123456789012345n; // replace with real wallet id
-  // const spinpoolToken = 10000;            // replace with real TokenSQL value
-  // const payout = computeBingoPayout(cryptoWalletId, spinpoolToken);
-  // console.log(payout);
 }
 
 /* TIMER */
@@ -340,14 +332,8 @@ function onTimerZero() {
 }
 
 /* ----------------------------------------------------------
-   BINGO PAYOUT LOGIC (BingoSQL)
+   BINGO LOGIC (matches your BingoSQL rules)
 ---------------------------------------------------------- */
-/*
-Table public."BingoSQL":
-  crypto_wallet_id BIGINT NOT NULL,
-  pct_7, pct_18, pct_15, pct_12, pct_9, pct_6, pct_3 NUMERIC(10,3),
-  total_spins, total_bingos, last_bingo_at, created_at, updated_at
-*/
 
 function computeBingoPayout(cryptoWalletId, spinpoolToken) {
   const w = cryptoWalletId.toString();
@@ -359,25 +345,19 @@ function computeBingoPayout(cryptoWalletId, spinpoolToken) {
   const b5 = w.at(-5) || null;  // 5th from right
   const b6 = w.at(-6) || null;  // 6th from right
 
-  const pct_3  = spinpoolToken * 0.03;  // 1st bingo
-  const pct_6  = spinpoolToken * 0.06;  // 2nd bingo
-  const pct_9  = spinpoolToken * 0.09;  // 3rd bingo
-  const pct_12 = spinpoolToken * 0.12;  // 4th bingo
-  const pct_15 = spinpoolToken * 0.15;  // 5th bingo
-  const pct_18 = spinpoolToken * 0.18;  // 6th bingo
+  const pct_3  = spinpoolToken * 0.03;
+  const pct_6  = spinpoolToken * 0.06;
+  const pct_9  = spinpoolToken * 0.09;
+  const pct_12 = spinpoolToken * 0.12;
+  const pct_15 = spinpoolToken * 0.15;
+  const pct_18 = spinpoolToken * 0.18;
 
-  // If all six pct_* are non-zero → 7% bonus
   const pct_7 = (pct_3 && pct_6 && pct_9 && pct_12 && pct_15 && pct_18)
     ? spinpoolToken * 0.07
     : 0;
 
-  // spinpooltoken minus 70% = 30%
   const spinpool30 = spinpoolToken * 0.30;
-
-  // spinpooltoken 30% + 2500 = new spinpooltoken (TokenSQL)
   const newSpinpoolToken = spinpool30 + 2500;
-
-  // token3 - 2500 (TokenSQL)
   const token3 = newSpinpoolToken - 2500;
 
   return {
@@ -394,31 +374,6 @@ function computeBingoPayout(cryptoWalletId, spinpoolToken) {
     token3
   };
 }
-
-// Example stub to update BingoSQL (you can wire this to Supabase)
-/*
-async function updateBingoSQL(cryptoWalletId, spinpoolToken) {
-  const p = computeBingoPayout(cryptoWalletId, spinpoolToken);
-
-  const { data, error } = await supabaseClient
-    .from("BingoSQL")
-    .update({
-      pct_3:  p.pct_3,
-      pct_6:  p.pct_6,
-      pct_9:  p.pct_9,
-      pct_12: p.pct_12,
-      pct_15: p.pct_15,
-      pct_18: p.pct_18,
-      pct_7:  p.pct_7,
-      total_bingos: 6,
-      last_bingo_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    })
-    .eq("crypto_wallet_id", cryptoWalletId);
-
-  console.log(data, error);
-}
-*/
 </script>
 
 </body>
