@@ -145,9 +145,160 @@
 <div class="price-box">
   <div class="price-title">TOKEN</div>
 
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Token - SpinWinToken</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+  body {
+    background:#000;
+    color:#ffd700;
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:0;
+    text-align:center;
+    padding-bottom:90px;
+  }
+
+  /* COUNTDOWN */
+  .countdown-box {
+    margin-top:20px;
+    padding:20px;
+    background:#111;
+    border:1px solid #ffd700;
+    border-radius:10px;
+    width:90%;
+    max-width:420px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .countdown-title { font-size:20px; }
+  .timer { font-size:32px; font-weight:bold; margin-top:10px; }
+  .countdown-info { margin-top:10px; font-size:14px; }
+
+  /* PRICE BOX */
+  .price-box {
+    margin-top:20px;
+    padding:20px;
+    background:#111;
+    border:1px solid #ffd700;
+    border-radius:10px;
+    width:90%;
+    max-width:420px;
+    margin-left:auto;
+    margin-right:auto;
+    text-align:center;
+  }
+
+  /* ⭐ MAKE PRICE INDEX LINE BIGGER */
+  .price-sub {
+    font-size:28px;
+    font-weight:bold;
+  }
+  #priceindexValue {
+    font-size:32px;
+    font-weight:bold;
+  }
+
+  table {
+    width:100%;
+    color:#ffd700;
+    font-size:14px;
+    border-collapse:collapse;
+  }
+  td {
+    border:1px solid #ffd700;
+    padding:10px;
+  }
+
+  /* REMOVE SMALL ARROWS */
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  .input-box {
+    padding:12px;
+    width:160px;
+    border-radius:8px;
+    border:1px solid #ffd700;
+    background:#222;
+    color:#ffd700;
+    text-align:center;
+    font-size:22px;
+  }
+
+  /* BIG ARROWS */
+  .arrow-column {
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .arrow-btn {
+    background:#ffd700;
+    color:#000;
+    border:none;
+    padding:10px 14px;
+    font-size:26px;
+    border-radius:6px;
+    cursor:pointer;
+  }
+
+  /* NAV ICONS — HORIZONTAL */
+  .icon-row {
+    position:fixed;
+    bottom:10px;
+    left:0;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:40px;
+  }
+  .icon-item { font-size:26px; opacity:0.9; cursor:pointer; }
+
+  /* BIG BUY BUTTON */
+  .buy-btn {
+    padding:16px 34px;
+    font-size:22px;
+    background:#ffd700;
+    color:#000;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    margin-top:20px;
+  }
+</style>
+</head>
+
+<body>
+
+<h1 style="margin-top:20px;">SPINWIN TOKEN</h1>
+
+<!-- COUNTDOWN -->
+<div class="countdown-box">
+  <div class="countdown-title">Spin Win Starts In</div>
+  <div id="timer" class="timer">Loading...</div>
+  <div class="countdown-info">
+    Eastern Standard Time (ET)<br>
+    Monday 8am • Thursday 8pm<br>
+    84‑hour cycle
+  </div>
+</div>
+
+<!-- PRICE + TOKEN TABLE -->
+<div class="price-box">
+  <div class="price-title">TOKEN</div>
+
   <div class="price-sub">
     Price Index = <span id="priceindexValue">-</span>
-    <span style="font-size:10px;">USDT</span>
+    <span style="font-size:18px;">USDT</span>
   </div>
 
   <table>
@@ -260,7 +411,6 @@
   updateTimer();
 </script>
 
-<!-- SUPABASE CLIENT -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
