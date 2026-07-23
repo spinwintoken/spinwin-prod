@@ -63,27 +63,6 @@
     background:#222;
     color:#ffd700;
     text-align:center;
-    -moz-appearance: textfield;
-  }
-  .input-box::-webkit-inner-spin-button,
-  .input-box::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  .arrow-column {
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-  }
-  .arrow-btn {
-    background:#ffd700;
-    color:#000;
-    border:none;
-    padding:6px 10px;
-    font-size:20px;
-    border-radius:6px;
-    cursor:pointer;
   }
 </style>
 </head>
@@ -124,9 +103,9 @@
       <td>TOTAL TOKENS: 10,000,000</td>
     </tr>
     <tr>
-      <td><span id="token1Value"></span></td>
+      <td><span id="token1Value">-</span></td>
       <td><span id="token2Value">★★★★★</span></td>
-      <td><span id="spinwintokenValue"></span></td>
+      <td><span id="bingototalValue">-</span></td>
     </tr>
   </table>
 </div>
@@ -142,8 +121,7 @@
   <div style="margin-top:20px;">
     <label style="font-size:16px;">Enter Token Amount</label><br><br>
 
-    <div style="display:flex; justify-content:center; align-items:center; gap:20px;">
-      
+    <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
       <input 
         id="buyAmount"
         type="number"
@@ -153,17 +131,16 @@
         class="input-box"
       />
 
-      <div class="arrow-column">
-        <button class="arrow-btn" onclick="increaseAmount()">▲</button>
-        <button class="arrow-btn" onclick="decreaseAmount()">▼</button>
+      <div style="display:flex; flex-direction:column;">
+        <button onclick="increaseAmount()" 
+          style="background:#ffd700; border:none; padding:4px; cursor:pointer;">▲</button>
+        <button onclick="decreaseAmount()" 
+          style="background:#ffd700; border:none; padding:4px; cursor:pointer;">▼</button>
       </div>
-
     </div>
 
-    <br><br>
-
     <button onclick="buyTokens()" 
-      style="padding:10px 20px; background:#ffd700; color:#000; border:none; border-radius:8px; cursor:pointer;">
+      style="margin-top:20px; padding:10px 20px; background:#ffd700; color:#000; border:none; border-radius:8px; cursor:pointer;">
       Buy Tokens
     </button>
   </div>
@@ -173,24 +150,22 @@
 <div class="price-box">
   <div class="price-title">TEAM TOKEN PURCHASED</div>
 
-  <table style="margin-top:20px; width:100%;">
-    <tr>
-      <td>Team Token Purchased</td>
-      <td><span id="teamtokenpurchasedValue">-</span></td>
-    </tr>
-  </table>
+  <div style="margin-top:20px; font-size:18px;">
+    <span id="teamTokenValue">-</span>
+  </div>
 </div>
 
-<!-- SUPABASE -->
-<script src="https://unpkg.com/@supabase/supabase-js@2.47.1/dist/umd/supabase.min.js"></script>
+<!-- NAV -->
+<div class="icon-row">
+  <div class="icon-item" onclick="location.href='home.html'">🏠</div>
+  <div class="icon-item" onclick="location.href='token.html'">🏅</div>
+  <div class="icon-item" onclick="location.href='spinwheel.html'">🎡</div>
+  <div class="icon-item" onclick="location.href='bingo.html'">🎯</div>
+  <div class="icon-item" onclick="location.href='profile.html'">🧑</div>
+</div>
+
+<!-- COUNTDOWN SCRIPT -->
 <script>
-
-  const supabase = supabase.createClient(
-    "https://zejhbfuuherovlxklrgy.supabase.co",
-    "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
-  );
-
-  /* COUNTDOWN TIMER */
   function updateTimer() {
     const now = new Date();
     const nowET = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
@@ -226,82 +201,58 @@
 
   setInterval(updateTimer, 1000);
   updateTimer();
+</script>
 
-  /* DB LOAD FUNCTIONS */
+<!-- SUPABASE -->
+<script src="https://unpkg.com/@supabase/supabase-js@2.47.1/dist/umd/supabase.min.js"></script>
+<script>
+
+  const supabaseClient = supabase.createClient(
+    "https://zejhbfuuherovlxklrgy.supabase.co",
+    "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
+  );
+
   async function checkUser() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await supabaseClient.auth.getUser();
     if (!user) location.href = "signin.html";
     return user;
   }
 
   async function loadTokenData() {
-    const { data } = await supabase
+    const { data } = await supabaseClient
       .from("TokenSQL")
-      .select("token1, priceindex")
+      .select("priceindex, token1, bingototal")
       .limit(1)
       .maybeSingle();
 
     if (!data) return;
 
-    document.getElementById("token1Value").textContent = data.token1 ?? "-";
     document.getElementById("priceindexValue").textContent = data.priceindex ?? "-";
+    document.getElementById("token1Value").textContent = data.token1 ?? "-";
+    document.getElementById("bingototalValue").textContent = data.bingototal ?? "-";
   }
 
-  async function loadUserData() {
+  async function loadTeamToken() {
     const user = await checkUser();
-    const { data } = await supabase
+    const { data } = await supabaseClient
       .from("UsersSQL")
-      .select("teamtokenpurchased, spinwintoken")
+      .select("teamtokenpurchased")
       .eq("uid", user.id)
       .maybeSingle();
 
     if (!data) return;
 
-    document.getElementById("teamtokenpurchasedValue").textContent = data.teamtokenpurchased ?? "-";
-    document.getElementById("spinwintokenValue").textContent = data.spinwintoken ?? "-";
+    document.getElementById("teamTokenValue").textContent = data.teamtokenpurchased ?? "-";
   }
 
   loadTokenData();
-  loadUserData();
+  loadTeamToken();
 
-  /* AUTO‑REFRESH EVERY 5 SECONDS */
+  // AUTO‑REFRESH EVERY 5 SECONDS
   setInterval(() => {
     loadTokenData();
-    loadUserData();
+    loadTeamToken();
   }, 5000);
-
-  /* PURCHASE LOGIC */
-  function increaseAmount() {
-    let v = parseFloat(document.getElementById("buyAmount").value || "0.0005");
-    v += 0.0001;
-    document.getElementById("buyAmount").value = v.toFixed(4);
-  }
-
-  function decreaseAmount() {
-    let v = parseFloat(document.getElementById("buyAmount").value || "0.0005");
-    v -= 0.0001;
-    if (v < 0.0005) v = 0.0005;
-    document.getElementById("buyAmount").value = v.toFixed(4);
-  }
-
-  function buyTokens() {
-    const v = document.getElementById("buyAmount").value;
-
-    if (v.includes(".")) {
-      const decimals = v.split(".")[1].length;
-      if (decimals > 4) {
-        alert("Value cannot be more than 4 decimals.");
-        return;
-      }
-    }
-
-    if (parseFloat(v) < 0.0005) {
-      alert("Minimum purchase is 0.0005");
-      return;
-    }
-
-    alert("Purchase successful: " + v + " tokens");
-  }
 
 </script>
 
