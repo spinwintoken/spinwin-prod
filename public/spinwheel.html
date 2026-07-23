@@ -103,12 +103,6 @@
 </div>
 
 <script>
-/* SUPABASE PLACEHOLDERS */
-const supabaseClient = supabase.createClient(
-  "YOUR_SUPABASE_URL",
-  "YOUR_SUPABASE_KEY"
-);
-
 /* 62 SLOTS */
 const wheelSlots = [
   ...Array.from({length:26}, (_,i)=>String.fromCharCode(65+i)),
@@ -254,7 +248,7 @@ async function runSpinWheel() {
     const value = spinOne();
     await animateSpin(value);
 
-    results.unshift(value); // right → left
+    results.unshift(value);
     updateResultsDisplay();
   }
 
@@ -332,11 +326,47 @@ function onTimerZero() {
 }
 
 /* ----------------------------------------------------------
-   BINGO LOGIC (matches your BingoSQL rules)
+   EXTRA LOGIC: BingoSQL + TokenSQL (no DB calls yet)
 ---------------------------------------------------------- */
 
-function computeBingoPayout(cryptoWalletId, spinpoolToken) {
-  const w = cryptoWalletId.toString();
+/*
+BingoSQL table (already created):
+
+create table public."BingoSQL" (
+  id BIGSERIAL PRIMARY KEY,
+  crypto_wallet_id BIGINT NOT NULL,
+  pct_7   NUMERIC(10,3) DEFAULT 0.000,
+  pct_18  NUMERIC(10,3) DEFAULT 0.000,
+  pct_15  NUMERIC(10,3) DEFAULT 0.000,
+  pct_12  NUMERIC(10,3) DEFAULT 0.000,
+  pct_9   NUMERIC(10,3) DEFAULT 0.000,
+  pct_6   NUMERIC(10,3) DEFAULT 0.000,
+  pct_3   NUMERIC(10,3) DEFAULT 0.000,
+  total_spins    INTEGER DEFAULT 0,
+  total_bingos   INTEGER DEFAULT 0,
+  last_bingo_at  TIMESTAMP NULL,
+  created_at     TIMESTAMP DEFAULT NOW(),
+  updated_at     TIMESTAMP DEFAULT NOW()
+);
+
+Logic (spinwheeltoken / TokenSQL):
+
+1st bingo = last char of crypto_wallet_id → 3% of spinpooltoken → pct_3
+2nd bingo = 2nd last char → 6% → pct_6
+3rd bingo = 3rd last char → 9% → pct_9
+4th bingo = 4th last char → 12% → pct_12
+5th bingo = 5th last char → 15% → pct_15
+6th bingo = 6th last char → 18% → pct_18
+
+If pct_3, pct_6, pct_9, pct_12, pct_15, pct_18 all != 0 → 7% bonus → pct_7
+
+spinpooltoken - 70% = 30%
+spinpooltoken 30% + 2500 = new spinpooltoken
+token3 = new spinpooltoken - 2500
+*/
+
+function computeBingoPayout(crypto_wallet_id, spinpooltoken) {
+  const w = crypto_wallet_id.toString();
 
   const b1 = w.at(-1)  || null; // 1st from right
   const b2 = w.at(-2) || null;  // 2nd from right
@@ -345,20 +375,26 @@ function computeBingoPayout(cryptoWalletId, spinpoolToken) {
   const b5 = w.at(-5) || null;  // 5th from right
   const b6 = w.at(-6) || null;  // 6th from right
 
-  const pct_3  = spinpoolToken * 0.03;
-  const pct_6  = spinpoolToken * 0.06;
-  const pct_9  = spinpoolToken * 0.09;
-  const pct_12 = spinpoolToken * 0.12;
-  const pct_15 = spinpoolToken * 0.15;
-  const pct_18 = spinpoolToken * 0.18;
+  const pct_3  = spinpooltoken * 0.03;
+  const pct_6  = spinpooltoken * 0.06;
+  const pct_9  = spinpooltoken * 0.09;
+  const pct_12 = spinpooltoken * 0.12;
+  const pct_15 = spinpooltoken * 0.15;
+  const pct_18 = spinpooltoken * 0.18;
 
-  const pct_7 = (pct_3 && pct_6 && pct_9 && pct_12 && pct_15 && pct_18)
-    ? spinpoolToken * 0.07
-    : 0;
+  const allNonZero =
+    pct_3  !== 0 &&
+    pct_6  !== 0 &&
+    pct_9  !== 0 &&
+    pct_12 !== 0 &&
+    pct_15 !== 0 &&
+    pct_18 !== 0;
 
-  const spinpool30 = spinpoolToken * 0.30;
+  const pct_7 = allNonZero ? spinpooltoken * 0.07 : 0;
+
+  const spinpool30       = spinpooltoken * 0.30;
   const newSpinpoolToken = spinpool30 + 2500;
-  const token3 = newSpinpoolToken - 2500;
+  const token3           = newSpinpoolToken - 2500;
 
   return {
     bingos: { b1, b2, b3, b4, b5, b6 },
