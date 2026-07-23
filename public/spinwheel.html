@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Spin Wheel - SpinWinToken</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+  body {
+    background:#000;
+    color:#ffd700;
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:0;
+    text-align:center;
+    padding-bottom:90px;
+  }
+
+  .logo-row { display:flex; align-items:center; justify-content:center; gap:15px; margin-top:20px; }
+  .logo-icon { font-size:60px; }
+  .logo-title { font-size:28px; font-weight:bold; }
+
+  .countdown-box {
+    margin-top:20px; padding:20px; background:#111; border:1px solid #ffd700;
+    border-radius:10px; width:90%; max-width:420px; margin-left:auto; margin-right:auto;
+  }
+  .countdown-title { font-size:20px; }
+  .timer { font-size:32px; font-weight:bold; margin-top:10px; }
+  .countdown-info { margin-top:10px; font-size:14px; }
+
+  .spin-results {
+    margin-top:40px;
+    font-size:40px;
+    letter-spacing:12px;
+  }
+
+  .bingo-display {
+    margin-top:20px;
+    font-size:32px;
+    color:#fff;
+  }
+
+  .icon-row {
+    position:fixed; bottom:10px; left:0; width:100%;
+    display:flex; justify-content:center; gap:40px;
+  }
+  .icon-item { font-size:26px; opacity:0.9; cursor:pointer; }
+</style>
+</head>
+
+<body>
+
+<div class="logo-row">
+  <div class="logo-icon">🎡</div>
+  <div class="logo-title">SPINWIN TOKEN</div>
+</div>
+
+<div class="countdown-box">
+  <div class="countdown-title">Spin Wheel Starts In</div>
+  <div id="timer" class="timer">Loading...</div>
+  <div class="countdown-info">
+    Eastern Standard Time (ET)<br>
+    Monday 8am • Thursday 8pm<br>
+    84‑hour cycle
+  </div>
+</div>
+
+<!-- SPIN RESULTS -->
+<div id="spin-results" class="spin-results">-- -- -- -- -- --</div>
+
+<!-- BINGO DISPLAY -->
+<div id="bingo-display" class="bingo-display"></div>
+
+<div class="icon-row">
+  <div class="icon-item" onclick="location.href='home.html'">🏠</div>
+  <div class="icon-item" onclick="location.href='token.html'">🏅</div>
+  <div class="icon-item" onclick="location.href='spinwheel.html'">🎡</div>
+  <div class="icon-item" onclick="location.href='bingo.html'">🎯</div>
+  <div class="icon-item" onclick="location.href='profile.html'">🧑</div>
+</div>
+
+<script>
+/* ----------------------------------------------------------
+   62 SLOT WHEEL (A–Z, a–z, 0–9)
+---------------------------------------------------------- */
+const wheelSlots = [
+  ...Array.from({length:26}, (_,i)=>String.fromCharCode(65+i)),   // A–Z
+  ...Array.from({length:26}, (_,i)=>String.fromCharCode(97+i)),   // a–z
+  ...Array.from({length:10}, (_,i)=>String(i))                    // 0–9
+];
+
+let spinPool = [...wheelSlots];   // no-repeat pool
+let results = [];                 // 6 results
+let spinning = false;
+let pauseTimer = false;
+
+/* ----------------------------------------------------------
+   SPIN ONE (no repeat)
+---------------------------------------------------------- */
+function spinOne() {
+  if (spinPool.length === 0) spinPool = [...wheelSlots];
+  const index = Math.floor(Math.random() * spinPool.length);
+  const value = spinPool[index];
+  spinPool.splice(index, 1);
+  return value;
+}
+
+/* ----------------------------------------------------------
+   DISPLAY RESULTS (right → left)
+---------------------------------------------------------- */
+function updateResultsDisplay() {
+  const box = document.getElementById("spin-results");
+  box.textContent = results.join("   ");
+}
+
+/* ----------------------------------------------------------
+   RUN 6 SPINS (3 seconds each)
+---------------------------------------------------------- */
+async function runSpinWheel() {
+  if (spinning) return;
+  spinning = true;
+
+  results = [];
+  updateResultsDisplay();
+  document.getElementById("bingo-display").textContent = "";
+
+  for (let i = 0; i < 6; i++) {
+    await new Promise(r => setTimeout(r, 3000)); // 3 seconds
+    const value = spinOne();
+    results.unshift(value); // right → left
+    updateResultsDisplay();
+  }
+
+  /* After 6 spins → show BINGO */
+  document.getElementById("bingo-display").textContent =
+    "BINGO: " + results.join("");
+
+  spinning = false;
+}
+
+/* ----------------------------------------------------------
+   TIMER LOGIC (same as home.html)
+---------------------------------------------------------- */
+function updateTimer() {
+  if (pauseTimer) return;
+
+  const now = new Date();
+  const nowET = new Date(
+    now.toLocaleString("en-US", { timeZone: "America/New_York" })
+  );
+
+  const day = nowET.getDay();
+  const hour = nowET.getHours();
+
+  let nextEventET = new Date(nowET);
+
+  function setThursday20() {
+    const daysToThu = (4 - day + 7) % 7;
+    nextEventET.setDate(nowET.getDate() + daysToThu);
+    nextEventET.setHours(20, 0, 0, 0);
+  }
+
+  function setNextMonday8() {
+    let daysToMon = (1 - day + 7) % 7;
+    if (daysToMon === 0) daysToMon = 7;
+    nextEventET.setDate(nowET.getDate() + daysToMon);
+    nextEventET.setHours(8, 0, 0, 0);
+  }
+
+  if (day === 1 && hour < 8) {
+    nextEventET.setHours(8, 0, 0, 0);
+  } else if (
+    (day === 1 && hour >= 8) ||
+    day === 2 ||
+    day === 3 ||
+    (day === 4 && hour < 20)
+  ) {
+    setThursday20();
+  } else {
+    setNextMonday8();
+  }
+
+  const diff = nextEventET - nowET;
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+
+  document.getElementById("timer").textContent =
+    `${hours}h ${minutes}m ${seconds}s`;
+
+  /* When timer hits 0 → spin wheel */
+  if (diff <= 1000) {
+    onTimerZero();
+  }
+}
+
+setInterval(updateTimer, 1000);
+updateTimer();
+
+/* ----------------------------------------------------------
+   TIMER ZERO → spin + pause 20 seconds + restart cycle
+---------------------------------------------------------- */
+function onTimerZero() {
+  pauseTimer = true;
+
+  runSpinWheel();
+
+  setTimeout(() => {
+    pauseTimer = false;
+    updateTimer();
+  }, 20000);
+}
+</script>
+
+</body>
+</html>
