@@ -16,6 +16,7 @@
     padding-bottom:90px;
   }
 
+  /* COUNTDOWN */
   .countdown-box {
     margin-top:20px;
     padding:20px;
@@ -31,6 +32,7 @@
   .timer { font-size:32px; font-weight:bold; margin-top:10px; }
   .countdown-info { margin-top:10px; font-size:14px; }
 
+  /* PRICE BOX */
   .price-box {
     margin-top:20px;
     padding:20px;
@@ -55,6 +57,16 @@
     padding:10px;
   }
 
+  /* REMOVE SMALL ARROWS */
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+
   .input-box {
     padding:10px;
     width:140px;
@@ -64,6 +76,34 @@
     color:#ffd700;
     text-align:center;
   }
+
+  /* BIG ARROWS */
+  .arrow-column {
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .arrow-btn {
+    background:#ffd700;
+    color:#000;
+    border:none;
+    padding:6px 10px;
+    font-size:20px;
+    border-radius:6px;
+    cursor:pointer;
+  }
+
+  /* FIX NAV ICONS — HORIZONTAL */
+  .icon-row {
+    position:fixed;
+    bottom:10px;
+    left:0;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:40px;
+  }
+  .icon-item { font-size:26px; opacity:0.9; cursor:pointer; }
 </style>
 </head>
 
@@ -121,7 +161,8 @@
   <div style="margin-top:20px;">
     <label style="font-size:16px;">Enter Token Amount</label><br><br>
 
-    <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
+    <div style="display:flex; justify-content:center; align-items:center; gap:20px;">
+      
       <input 
         id="buyAmount"
         type="number"
@@ -131,16 +172,17 @@
         class="input-box"
       />
 
-      <div style="display:flex; flex-direction:column;">
-        <button onclick="increaseAmount()" 
-          style="background:#ffd700; border:none; padding:4px; cursor:pointer;">▲</button>
-        <button onclick="decreaseAmount()" 
-          style="background:#ffd700; border:none; padding:4px; cursor:pointer;">▼</button>
+      <div class="arrow-column">
+        <button class="arrow-btn" onclick="increaseAmount()">▲</button>
+        <button class="arrow-btn" onclick="decreaseAmount()">▼</button>
       </div>
+
     </div>
 
+    <br><br>
+
     <button onclick="buyTokens()" 
-      style="margin-top:20px; padding:10px 20px; background:#ffd700; color:#000; border:none; border-radius:8px; cursor:pointer;">
+      style="padding:10px 20px; background:#ffd700; color:#000; border:none; border-radius:8px; cursor:pointer;">
       Buy Tokens
     </button>
   </div>
@@ -150,7 +192,7 @@
 <div class="price-box">
   <div class="price-title">TEAM TOKEN PURCHASED</div>
 
-  <div style="margin-top:20px; font-size:18px;">
+  <div style="margin-top:20px; font-size:22px;">
     <span id="teamTokenValue">-</span>
   </div>
 </div>
