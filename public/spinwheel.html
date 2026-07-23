@@ -1,109 +1,164 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Spin Wheel</title>
+<meta charset="UTF-8" />
+<title>Spin Wheel - SpinWinToken</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <style>
-    body { margin: 0; font-family: Arial, sans-serif; }
+<style>
+  body {
+    background:#000;
+    color:#ffd700;
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:0;
+    text-align:center;
+    padding-bottom:90px;
+  }
 
-    /* NAV BAR — same as home.html */
-    .nav {
-      display: flex;
-      background: #222;
-      padding: 12px;
-      justify-content: center;
-      gap: 40px;
-    }
-    .nav a {
-      color: white;
-      text-decoration: none;
-      font-size: 18px;
-    }
+  .logo-row { display:flex; align-items:center; justify-content:center; gap:15px; margin-top:20px; }
+  .logo-icon { font-size:60px; }
+  .logo-title { font-size:28px; font-weight:bold; }
 
-    /* PAGE LAYOUT */
-    .container {
-      text-align: center;
-      margin-top: 60px;
-    }
-    #title {
-      font-size: 32px;
-      margin-bottom: 10px;
-    }
-    #countdown {
-      font-size: 40px;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-    #schedule {
-      font-size: 14px;
-      color: #555;
-    }
-  </style>
+  .countdown-box {
+    margin-top:20px; padding:20px; background:#111; border:1px solid #ffd700;
+    border-radius:10px; width:90%; max-width:420px; margin-left:auto; margin-right:auto;
+  }
+  .countdown-title { font-size:20px; }
+  .timer { font-size:32px; font-weight:bold; margin-top:10px; }
+  .countdown-info { margin-top:10px; font-size:14px; }
+
+  .popup {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.85); color:#ffd700; display:none;
+    justify-content:center; align-items:center; flex-direction:column;
+    padding:20px; text-align:left; backdrop-filter:blur(4px); z-index:999;
+  }
+  .popup-box {
+    background:#111; border:1px solid #ffd700; border-radius:14px;
+    padding:25px; width:85%; max-width:420px;
+  }
+  .popup-close {
+    margin-top:20px; font-size:16px; padding:8px 14px;
+    background:#ffd700; color:#000; border:none; border-radius:6px; cursor:pointer;
+  }
+
+  .icon-row {
+    position:fixed; bottom:10px; left:0; width:100%;
+    display:flex; justify-content:center; gap:40px;
+  }
+  .icon-item { font-size:26px; opacity:0.9; cursor:pointer; }
+</style>
 </head>
 
 <body>
 
-  <!-- SAME NAV BAR AS home.html -->
-  <div class="nav">
-    <a href="home.html">Home</a>
-    <a href="token.html">Token</a>
-    <a href="spinwheel.html">Spin Wheel</a>
+<div class="logo-row">
+  <div class="logo-icon">🎡</div>
+  <div class="logo-title">SPINWIN TOKEN</div>
+</div>
+
+<div class="countdown-box">
+  <div class="countdown-title">Spin Wheel Starts In</div>
+  <div id="timer" class="timer">Loading...</div>
+  <div class="countdown-info">
+    Eastern Standard Time (ET)<br>
+    Monday 8am • Thursday 8pm<br>
+    84‑hour cycle
   </div>
+</div>
 
-  <div class="container">
-    <div id="title">Spin Win Starts In</div>
-    <div id="countdown">Loading...</div>
+<!-- ⭐ YOU WILL FILL THIS PART LATER ⭐ -->
+<div style="margin-top:40px; font-size:22px; opacity:0.7;">
+  (Spin Wheel content goes here)
+</div>
 
-    <div id="schedule">
-      Eastern Standard Time (ET)<br>
-      Monday 8am • Thursday 8pm<br>
-      84‑hour cycle
-    </div>
+<div id="popup" class="popup">
+  <div class="popup-box">
+    <h1 id="h1"></h1>
+    <h2 id="h2"></h2>
+    <h3 id="h3"></h3>
+    <h4 id="h4"></h4>
+    <p id="p1"></p>
+    <button class="popup-close" onclick="closePage()">✖</button>
   </div>
+</div>
 
-  <!-- SAME TIMER SCRIPT AS home.html -->
-  <script>
-    function nextSpin(now) {
-      const day = now.getDay();   // 1=Mon, 4=Thu
-      const hour = now.getHours();
+<div class="icon-row">
+  <div class="icon-item" onclick="location.href='home.html'">🏠</div>
+  <div class="icon-item" onclick="location.href='token.html'">🏅</div>
+  <div class="icon-item" onclick="location.href='spinwheel.html'">🎡</div>
+  <div class="icon-item" onclick="location.href='bingo.html'">🎯</div>
+  <div class="icon-item" onclick="location.href='profile.html'">🧑</div>
+</div>
 
-      function target(dayNum, hourNum) {
-        const d = new Date(now);
-        const diff = (dayNum - day + 7) % 7;
-        d.setDate(d.getDate() + diff);
-        d.setHours(hourNum, 0, 0, 0);
-        if (diff === 0 && d <= now) d.setDate(d.getDate() + 7);
-        return d;
-      }
+<script>
+  function openPage(name) {
+    document.getElementById("popup").style.display = "flex";
+    document.getElementById("h1").textContent = name;
+    document.getElementById("h2").textContent = "Section Header 2";
+    document.getElementById("h3").textContent = "Section Header 3";
+    document.getElementById("h4").textContent = "Section Header 4";
+    document.getElementById("p1").textContent =
+      "This is a paragraph of information for the " + name + " section.";
+  }
 
-      const mon8 = target(1, 8);
-      const thu20 = target(4, 20);
+  function closePage() {
+    document.getElementById("popup").style.display = "none";
+  }
 
-      return (mon8 < thu20) ? mon8 : thu20;
+  /* FIXED 84-HOUR ET COUNTDOWN (same as home.html) */
+  function updateTimer() {
+    const now = new Date();
+
+    const nowET = new Date(
+      now.toLocaleString("en-US", { timeZone: "America/New_York" })
+    );
+
+    const day = nowET.getDay();
+    const hour = nowET.getHours();
+
+    let nextEventET = new Date(nowET);
+
+    function setThursday20() {
+      const daysToThu = (4 - day + 7) % 7;
+      nextEventET.setDate(nowET.getDate() + daysToThu);
+      nextEventET.setHours(20, 0, 0, 0);
     }
 
-    function fmt(ms) {
-      const s = Math.floor(ms / 1000);
-      const d = Math.floor(s / 86400);
-      const h = Math.floor((s % 86400) / 3600);
-      const m = Math.floor((s % 3600) / 60);
-      const sec = s % 60;
-      return `${d}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(sec).padStart(2,'0')}s`;
+    function setNextMonday8() {
+      let daysToMon = (1 - day + 7) % 7;
+      if (daysToMon === 0) daysToMon = 7;
+      nextEventET.setDate(nowET.getDate() + daysToMon);
+      nextEventET.setHours(8, 0, 0, 0);
     }
 
-    function tick() {
-      const now = new Date();
-      const next = nextSpin(now);
-      const diff = next - now;
-
-      const el = document.getElementById("countdown");
-      el.textContent = diff <= 0 ? "Spin Win is LIVE" : fmt(diff);
+    if (day === 1 && hour < 8) {
+      nextEventET.setHours(8, 0, 0, 0);
+    } else if (
+      (day === 1 && hour >= 8) ||
+      day === 2 ||
+      day === 3 ||
+      (day === 4 && hour < 20)
+    ) {
+      setThursday20();
+    } else {
+      setNextMonday8();
     }
 
-    tick();
-    setInterval(tick, 1000);
-  </script>
+    const diff = nextEventET - nowET;
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("timer").textContent =
+      `${hours}h ${minutes}m ${seconds}s`;
+  }
+
+  setInterval(updateTimer, 1000);
+  updateTimer();
+</script>
 
 </body>
 </html>
