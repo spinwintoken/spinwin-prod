@@ -81,7 +81,6 @@
   }
   .icon-item { font-size:26px; opacity:0.9; cursor:pointer; }
 
-  /* REMOVE SMALL ARROWS INSIDE INPUT BOX */
   .input-box {
     padding:10px;
     width:140px;
@@ -98,7 +97,6 @@
     margin: 0;
   }
 
-  /* BIG ARROWS OUTSIDE BOX */
   .arrow-column {
     display:flex;
     flex-direction:column;
@@ -258,7 +256,7 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2.47.1/dist/umd/supabase.min.js"></script>
 <script>
 
-  /* ⭐ SAME CLIENT AS HOME.HTML — THIS FIXES DB DISPLAY ⭐ */
+  /* ⭐ CORRECT SUPABASE CLIENT — THIS FIXES DB DISPLAY ⭐ */
   const { createClient } = supabase;
   const supabaseClient = createClient(
     "https://zejhbfuuherovlxklrgy.supabase.co",
