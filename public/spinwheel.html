@@ -28,13 +28,20 @@
   .timer { font-size:32px; font-weight:bold; margin-top:10px; }
   .countdown-info { margin-top:10px; font-size:14px; }
 
-  .spin-results {
+  canvas {
     margin-top:40px;
+    background:#111;
+    border:2px solid #ffd700;
+    border-radius:50%;
+  }
+
+  #spin-results {
+    margin-top:30px;
     font-size:40px;
     letter-spacing:12px;
   }
 
-  .bingo-display {
+  #bingo-display {
     margin-top:20px;
     font-size:32px;
     color:#fff;
@@ -65,11 +72,11 @@
   </div>
 </div>
 
-<!-- SPIN RESULTS -->
-<div id="spin-results" class="spin-results">-- -- -- -- -- --</div>
+<!-- REAL SPIN WHEEL -->
+<canvas id="wheel" width="320" height="320"></canvas>
 
-<!-- BINGO DISPLAY -->
-<div id="bingo-display" class="bingo-display"></div>
+<div id="spin-results">-- -- -- -- -- --</div>
+<div id="bingo-display"></div>
 
 <div class="icon-row">
   <div class="icon-item" onclick="location.href='home.html'">🏠</div>
@@ -84,15 +91,51 @@
    62 SLOT WHEEL (A–Z, a–z, 0–9)
 ---------------------------------------------------------- */
 const wheelSlots = [
-  ...Array.from({length:26}, (_,i)=>String.fromCharCode(65+i)),   // A–Z
-  ...Array.from({length:26}, (_,i)=>String.fromCharCode(97+i)),   // a–z
-  ...Array.from({length:10}, (_,i)=>String(i))                    // 0–9
+  ...Array.from({length:26}, (_,i)=>String.fromCharCode(65+i)),
+  ...Array.from({length:26}, (_,i)=>String.fromCharCode(97+i)),
+  ...Array.from({length:10}, (_,i)=>String(i))
 ];
 
-let spinPool = [...wheelSlots];   // no-repeat pool
-let results = [];                 // 6 results
+let spinPool = [...wheelSlots];
+let results = [];
 let spinning = false;
 let pauseTimer = false;
+
+/* ----------------------------------------------------------
+   DRAW WHEEL
+---------------------------------------------------------- */
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+const radius = 160;
+
+function drawWheel(rotation=0) {
+  const slice = (2 * Math.PI) / wheelSlots.length;
+
+  for (let i = 0; i < wheelSlots.length; i++) {
+    const start = i * slice + rotation;
+    const end = start + slice;
+
+    ctx.beginPath();
+    ctx.moveTo(radius, radius);
+    ctx.arc(radius, radius, radius, start, end);
+    ctx.fillStyle = i % 2 === 0 ? "#222" : "#333";
+    ctx.fill();
+    ctx.strokeStyle = "#ffd700";
+    ctx.stroke();
+
+    // text
+    ctx.save();
+    ctx.translate(radius, radius);
+    ctx.rotate(start + slice / 2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#ffd700";
+    ctx.font = "14px Arial";
+    ctx.fillText(wheelSlots[i], radius - 10, 5);
+    ctx.restore();
+  }
+}
+
+drawWheel();
 
 /* ----------------------------------------------------------
    SPIN ONE (no repeat)
@@ -106,15 +149,41 @@ function spinOne() {
 }
 
 /* ----------------------------------------------------------
-   DISPLAY RESULTS (right → left)
+   ANIMATED SPIN
 ---------------------------------------------------------- */
-function updateResultsDisplay() {
-  const box = document.getElementById("spin-results");
-  box.textContent = results.join("   ");
+function animateSpin(targetValue) {
+  return new Promise(resolve => {
+    let angle = 0;
+    let speed = 0.35;
+
+    const targetIndex = wheelSlots.indexOf(targetValue);
+    const slice = (2 * Math.PI) / wheelSlots.length;
+    const targetAngle = (2 * Math.PI * 4) + (slice * targetIndex);
+
+    function frame() {
+      angle += speed;
+      speed *= 0.985;
+
+      drawWheel(angle);
+
+      if (angle >= targetAngle) resolve();
+      else requestAnimationFrame(frame);
+    }
+
+    frame();
+  });
 }
 
 /* ----------------------------------------------------------
-   RUN 6 SPINS (3 seconds each)
+   DISPLAY RESULTS
+---------------------------------------------------------- */
+function updateResultsDisplay() {
+  document.getElementById("spin-results").textContent =
+    results.join("   ");
+}
+
+/* ----------------------------------------------------------
+   RUN 6 SPINS
 ---------------------------------------------------------- */
 async function runSpinWheel() {
   if (spinning) return;
@@ -125,13 +194,15 @@ async function runSpinWheel() {
   document.getElementById("bingo-display").textContent = "";
 
   for (let i = 0; i < 6; i++) {
-    await new Promise(r => setTimeout(r, 3000)); // 3 seconds
+    await new Promise(r => setTimeout(r, 3000)); // wait 3 seconds
+
     const value = spinOne();
-    results.unshift(value); // right → left
+    await animateSpin(value);
+
+    results.unshift(value);
     updateResultsDisplay();
   }
 
-  /* After 6 spins → show BINGO */
   document.getElementById("bingo-display").textContent =
     "BINGO: " + results.join("");
 
@@ -139,7 +210,7 @@ async function runSpinWheel() {
 }
 
 /* ----------------------------------------------------------
-   TIMER LOGIC (same as home.html)
+   TIMER (same as home.html)
 ---------------------------------------------------------- */
 function updateTimer() {
   if (pauseTimer) return;
@@ -189,17 +260,14 @@ function updateTimer() {
   document.getElementById("timer").textContent =
     `${hours}h ${minutes}m ${seconds}s`;
 
-  /* When timer hits 0 → spin wheel */
-  if (diff <= 1000) {
-    onTimerZero();
-  }
+  if (diff <= 1000) onTimerZero();
 }
 
 setInterval(updateTimer, 1000);
 updateTimer();
 
 /* ----------------------------------------------------------
-   TIMER ZERO → spin + pause 20 seconds + restart cycle
+   TIMER ZERO → spin + pause 20 sec
 ---------------------------------------------------------- */
 function onTimerZero() {
   pauseTimer = true;
@@ -215,3 +283,4 @@ function onTimerZero() {
 
 </body>
 </html>
+
