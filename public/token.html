@@ -99,6 +99,11 @@
   }
 
   /* BIG ARROWS OUTSIDE BOX */
+  .arrow-column {
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
   .arrow-btn {
     background:#ffd700;
     color:#000;
@@ -166,8 +171,7 @@
     <label style="font-size:16px;">Enter Token Amount</label><br><br>
 
     <div style="display:flex; justify-content:center; align-items:center; gap:20px;">
-      <button class="arrow-btn" onclick="increaseAmount()">▲</button>
-
+      
       <input 
         id="buyAmount"
         type="number"
@@ -177,7 +181,11 @@
         class="input-box"
       />
 
-      <button class="arrow-btn" onclick="decreaseAmount()">▼</button>
+      <div class="arrow-column">
+        <button class="arrow-btn" onclick="increaseAmount()">▲</button>
+        <button class="arrow-btn" onclick="decreaseAmount()">▼</button>
+      </div>
+
     </div>
 
     <br><br>
@@ -250,7 +258,7 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2.47.1/dist/umd/supabase.min.js"></script>
 <script>
 
-  /* ⭐ SAME AS HOME.HTML — THIS FIXES YOUR PAGE ⭐ */
+  /* ⭐ SAME CLIENT AS HOME.HTML — THIS FIXES DB DISPLAY ⭐ */
   const supabase = supabase.createClient(
     "https://zejhbfuuherovlxklrgy.supabase.co",
     "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
