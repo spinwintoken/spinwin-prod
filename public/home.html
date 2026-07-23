@@ -186,11 +186,11 @@ function closePage() {
   document.getElementById("popup").style.display = "none";
 }
 
-/* ⭐ FIXED 84-HOUR CYCLE TIMER ⭐ */
+/* ⭐ FIXED 84-HOUR CYCLE TIMER USING TRUE EASTERN TIME ⭐ */
 function updateTimer() {
   const now = new Date();
 
-  // Convert to Eastern Time
+  // Convert NOW → Eastern Time
   const nowET = new Date(
     now.toLocaleString("en-US", { timeZone: "America/New_York" })
   );
@@ -212,7 +212,7 @@ function updateTimer() {
   } else if (nowET < thursday) {
     nextEvent = thursday;
   } else {
-    // Both passed → add 84 hours
+    // Both passed → add EXACT 84 hours
     nextEvent = new Date(nowET.getTime() + 84 * 60 * 60 * 1000);
   }
 
