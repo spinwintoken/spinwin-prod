@@ -28,6 +28,14 @@
   .timer { font-size:32px; font-weight:bold; margin-top:10px; }
   .countdown-info { margin-top:10px; font-size:14px; }
 
+  /* small token text bottom-right */
+  .token-info {
+    margin-top:6px;
+    font-size:12px;
+    text-align:right;
+    color:#ffd700;
+  }
+
   /* ▼ POINTER TOUCHING WHEEL */
   .pointer {
     width:0;
@@ -84,6 +92,10 @@
     Eastern Standard Time (ET)<br>
     Monday 8am • Thursday 8pm<br>
     84‑hour cycle
+  </div>
+  <!-- NEW: small Token display bottom-right -->
+  <div class="token-info">
+    Token: <span id="spinpooltoken">--</span>
   </div>
 </div>
 
@@ -329,51 +341,15 @@ function onTimerZero() {
    EXTRA LOGIC: BingoSQL + TokenSQL (no DB calls yet)
 ---------------------------------------------------------- */
 
-/*
-BingoSQL table (already created):
-
-create table public."BingoSQL" (
-  id BIGSERIAL PRIMARY KEY,
-  crypto_wallet_id BIGINT NOT NULL,
-  pct_7   NUMERIC(10,3) DEFAULT 0.000,
-  pct_18  NUMERIC(10,3) DEFAULT 0.000,
-  pct_15  NUMERIC(10,3) DEFAULT 0.000,
-  pct_12  NUMERIC(10,3) DEFAULT 0.000,
-  pct_9   NUMERIC(10,3) DEFAULT 0.000,
-  pct_6   NUMERIC(10,3) DEFAULT 0.000,
-  pct_3   NUMERIC(10,3) DEFAULT 0.000,
-  total_spins    INTEGER DEFAULT 0,
-  total_bingos   INTEGER DEFAULT 0,
-  last_bingo_at  TIMESTAMP NULL,
-  created_at     TIMESTAMP DEFAULT NOW(),
-  updated_at     TIMESTAMP DEFAULT NOW()
-);
-
-Logic (spinwheeltoken / TokenSQL):
-
-1st bingo = last char of crypto_wallet_id → 3% of spinpooltoken → pct_3
-2nd bingo = 2nd last char → 6% → pct_6
-3rd bingo = 3rd last char → 9% → pct_9
-4th bingo = 4th last char → 12% → pct_12
-5th bingo = 5th last char → 15% → pct_15
-6th bingo = 6th last char → 18% → pct_18
-
-If pct_3, pct_6, pct_9, pct_12, pct_15, pct_18 all != 0 → 7% bonus → pct_7
-
-spinpooltoken - 70% = 30%
-spinpooltoken 30% + 2500 = new spinpooltoken
-token3 = new spinpooltoken - 2500
-*/
-
 function computeBingoPayout(crypto_wallet_id, spinpooltoken) {
   const w = crypto_wallet_id.toString();
 
-  const b1 = w.at(-1)  || null; // 1st from right
-  const b2 = w.at(-2) || null;  // 2nd from right
-  const b3 = w.at(-3) || null;  // 3rd from right
-  const b4 = w.at(-4) || null;  // 4th from right
-  const b5 = w.at(-5) || null;  // 5th from right
-  const b6 = w.at(-6) || null;  // 6th from right
+  const b1 = w.at(-1)  || null;
+  const b2 = w.at(-2) || null;
+  const b3 = w.at(-3) || null;
+  const b4 = w.at(-4) || null;
+  const b5 = w.at(-5) || null;
+  const b6 = w.at(-6) || null;
 
   const pct_3  = spinpooltoken * 0.03;
   const pct_6  = spinpooltoken * 0.06;
@@ -410,9 +386,17 @@ function computeBingoPayout(crypto_wallet_id, spinpooltoken) {
     token3
   };
 }
+
+/* ----------------------------------------------------------
+   Token display placeholder (replace with real TokenSQL)
+---------------------------------------------------------- */
+
+let spinpooltokenValue = 12345; // placeholder for TokenSQL value
+document.getElementById("spinpooltoken").textContent = spinpooltokenValue;
 </script>
 
 </body>
 </html>
+
 
 
