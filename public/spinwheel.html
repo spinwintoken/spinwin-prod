@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Spin Wheel - SpinWinToken</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+  body {
+    background:#000;
+    color:#ffd700;
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:0;
+    text-align:center;
+    padding-bottom:90px;
+  }
+
+  .logo-row { display:flex; align-items:center; justify-content:center; gap:15px; margin-top:20px; }
+  .logo-icon { font-size:60px; }
+  .logo-title { font-size:28px; font-weight:bold; }
+
+  /* NEW: 50% timer + 50% icon row */
+  .top-row {
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    gap:10px;
+    width:90%;
+    max-width:420px;
+    margin:20px auto 0 auto;
+  }
+
+  .half-box {
+    width:50%;
+  }
+
+  /* your original countdown box untouched */
+  .countdown-box {
+    padding:20px; background:#111; border:1px solid #ffd700;
+    border-radius:10px; width:100%;
+  }
+  .countdown-title { font-size:20px; }
+  .timer { font-size:32px; font-weight:bold; margin-top:10px; }
+  .countdown-info { margin-top:10px; font-size:14px; }
+
+  /* NEW: bingo icon box */
+  .icon-box {
+    padding:20px; background:#111; border:1px solid #ffd700;
+    border-radius:10px; width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .bingo-icon {
+    font-size:60px;
+  }
+
+  .token-value {
+    margin-top:10px;
+    font-size:26px;
+    font-weight:bold;
+  }
+
+  .token-small {
+    font-size:12px;
+    margin-top:2px;
+    text-align:right;
+    width:100%;
+    color:#ffd700;
+  }
+
+  /* ▼ POINTER TOUCHING WHEEL */
+  .pointer {
+    width:0;
+    height:0;
+    border-left:20px solid transparent;
+    border-right:20px solid transparent;
+    border-top:30px solid red;
+    margin:0 auto;
+    margin-top:18px;
+  }
+
+  canvas {
+    margin-top:0px;
+    background:#111;
+    border:3px solid #ffd700;
+    border-radius:50%;
+  }
+
+  #spin-results {
+    margin-top:30px;
+    font-size:40px;
+    letter-spacing:12px;
+  }
+
+  #bingo-display {
+    margin-top:20px;
+    font-size:32px;
+    color:#fff;
+  }
+
+  .icon-row {
+    position:fixed; bottom:10px; left:0; width:100%;
+    display:flex; justify-content:center; gap:40px;
+  }
+  .icon-item { font-size:26px; opacity:0.9; cursor:pointer; }
+</style>
+</head>
+
+<body>
+
+<!-- SOUND EFFECTS -->
+<audio id="spinSound" src="spin.mp3"></audio>
+<audio id="winSound" src="win.mp3"></audio>
+
+<div class="logo-row">
+  <div class="logo-icon">🎡</div>
+  <div class="logo-title">SPINWIN TOKEN</div>
+</div>
+
+<!-- NEW 50% TIMER + 50% ICON -->
+<div class="top-row">
+
+  <!-- LEFT 50%: your original timer box (unchanged) -->
+  <div class="half-box">
+    <div class="countdown-box">
+      <div class="countdown-title">Spin Wheel Starts In</div>
+      <div id="timer" class="timer">Loading...</div>
+      <div class="countdown-info">
+        Eastern Standard Time (ET)<br>
+        Monday 8am • Thursday 8pm<br>
+        84‑hour cycle
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT 50%: bingo icon + spinpooltoken -->
+  <div class="half-box">
+    <div class="icon-box">
+      <div class="bingo-icon">🎯</div>
+      <div id="spinpooltoken" class="token-value">--</div>
+      <div class="token-small">Token</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="pointer"></div>
+
+<canvas id="wheel" width="320" height="320"></canvas>
+
+<div id="spin-results">-- -- -- -- -- --</div>
+<div id="bingo-display"></div>
+
+<div class="icon-row">
+  <div class="icon-item" onclick="location.href='home.html'">🏠</div>
+  <div class="icon-item" onclick="location.href='token.html'">🏅</div>
+  <div class="icon-item" onclick="location.href='spinwheel.html'">🎡</div>
+  <div class="icon-item" onclick="location.href='bingo.html'">🎯</div>
+  <div class="icon-item" onclick="location.href='profile.html'">🧑</div>
+</div>
+
+<script>
+/* 62 SLOTS */
+const wheelSlots = [
+  ...Array.from({length:26}, (_,i)=>String.fromCharCode(65+i)),
+  ...Array.from({length:26}, (_,i)=>String.fromCharCode(97+i)),
+  ...Array.from({length:10}, (_,i)=>String(i))
+];
+
+let spinPool = [...wheelSlots];
+let results = [];
+let spinning = false;
+let pauseTimer = false;
+
+/* DRAW WHEEL */
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+const radius = 160;
+
+function drawWheel(rotation=0) {
+  const slice = (2 * Math.PI) / wheelSlots.length;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (let i = 0; i < wheelSlots.length; i++) {
+    const start = i * slice + rotation;
+    const end = start + slice;
+
+    ctx.beginPath();
+    ctx.moveTo(radius, radius);
+    ctx.arc(radius, radius, radius, start, end);
+
+    ctx.fillStyle = i % 2 === 0 ? "#2a2a2a" : "#444";
+    ctx.fill();
+
+    ctx.strokeStyle = "#ffd700";
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(radius, radius);
+    ctx.rotate(start + slice / 2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#ffd700";
+    ctx.font = "14px Arial";
+    ctx.fillText(wheelSlots[i], radius - 10, 5);
+    ctx.restore();
+  }
+}
+
+drawWheel();
+
+/* FLASHING GLOW */
+function flashSlice(index) {
+  const slice = (2 * Math.PI) / wheelSlots.length;
+  const start = index * slice;
+  const end = start + slice;
+
+  let flashOn = true;
+  let count = 0;
+
+  const flashInterval = setInterval(() => {
+    count++;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(radius, radius);
+    ctx.arc(radius, radius, radius, start, end);
+
+    ctx.fillStyle = flashOn
+      ? "rgba(255, 215, 0, 0.55)"
+      : "rgba(255, 215, 0, 0.0)";
+
+    ctx.fill();
+    ctx.restore();
+
+    flashOn = !flashOn;
+
+    if (count >= 10) clearInterval(flashInterval);
+  }, 100);
+}
+
+/* SPIN ONE (NO REPEAT) */
+function spinOne() {
+  if (spinPool.length === 0) spinPool = [...wheelSlots];
+  const index = Math.floor(Math.random() * spinPool.length);
+  const value = spinPool[index];
+  spinPool.splice(index, 1);
+  return value;
+}
+
+/* ANIMATED SPIN */
+function animateSpin(targetValue) {
+  return new Promise(resolve => {
+    let angle = 0;
+    let speed = 0.35;
+
+    const targetIndex = wheelSlots.indexOf(targetValue);
+    const slice = (2 * Math.PI) / wheelSlots.length;
+
+    const targetAngle = (2 * Math.PI * 4) + (slice * targetIndex);
+
+    document.getElementById("spinSound").play();
+
+    function frame() {
+      angle += speed;
+      speed *= 0.985;
+
+      drawWheel(angle);
+
+      if (angle >= targetAngle) {
+        drawWheel(angle);
+
+        document.getElementById("winSound").play();
+
+        flashSlice(targetIndex);
+
+        resolve();
+      } else {
+        requestAnimationFrame(frame);
+      }
+    }
+
+    frame();
+  });
+}
+
+/* DISPLAY RESULTS */
+function updateResultsDisplay() {
+  document.getElementById("spin-results").textContent =
+    results.join("   ");
+}
+
+/* RUN 6 SPINS */
+async function runSpinWheel() {
+  if (spinning) return;
+  spinning = true;
+
+  results = [];
+  updateResultsDisplay();
+  document.getElementById("bingo-display").textContent = "";
+
+  for (let i = 0; i < 6; i++) {
+    await new Promise(r => setTimeout(r, 3000));
+
+    const value = spinOne();
+    await animateSpin(value);
+
+    results.unshift(value);
+    updateResultsDisplay();
+  }
+
+  document.getElementById("bingo-display").textContent =
+    "BINGO: " + results.join("");
+
+  spinning = false;
+}
+
+/* TIMER */
+function updateTimer() {
+  if (pauseTimer) return;
+
+  const now = new Date();
+  const nowET = new Date(
+    now.toLocaleString("en-US", { timeZone: "America/New_York" })
+  );
+
+  const day = nowET.getDay();
+  const hour = nowET.getHours();
+
+  let nextEventET = new Date(nowET);
+
+  function setThursday20() {
+    const daysToThu = (4 - day + 7) % 7;
+    nextEventET.setDate(nowET.getDate() + daysToThu);
+    nextEventET.setHours(20, 0, 0, 0);
+  }
+
+  function setNextMonday8() {
+    let daysToMon = (1 - day + 7) % 7;
+    if (daysToMon === 0) daysToMon = 7;
+    nextEventET.setDate(nowET.getDate() + daysToMon);
+    nextEventET.setHours(8, 0, 0, 0);
+  }
+
+  if (day === 1 && hour < 8) {
+    nextEventET.setHours(8, 0, 0, 0);
+  } else if (
+    (day === 1 && hour >= 8) ||
+    day === 2 ||
+    day === 3 ||
+    (day === 4 && hour < 20)
+  ) {
+    setThursday20();
+  } else {
+    setNextMonday8();
+  }
+
+  const diff = nextEventET - nowET;
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+
+  document.getElementById("timer").textContent =
+    `${hours}h ${minutes}m ${seconds}s`;
+
+  if (diff <= 1000) onTimerZero();
+}
+
+setInterval(updateTimer, 1000);
+updateTimer();
+
+/* TIMER ZERO → SPIN + PAUSE */
+function onTimerZero() {
+  pauseTimer = true;
+
+  runSpinWheel();
+
+  setTimeout(() => {
+    pauseTimer = false;
+    updateTimer();
+  }, 20000);
+}
+
+/* ----------------------------------------------------------
+   TokenSQL display (placeholder)
+---------------------------------------------------------- */
+
+let spinpooltokenValue = 12345; // replace with real TokenSQL value
+document.getElementById("spinpooltoken").textContent = spinpooltokenValue;
+
+/* ----------------------------------------------------------
+   BingoSQL logic (unchanged)
+---------------------------------------------------------- */
+
+function computeBingoPayout(crypto_wallet_id, spinpooltoken) {
+  const w = crypto_wallet_id.toString();
+
+  const b1 = w.at(-1)  || null;
+  const b2 = w.at(-2) || null;
+  const b3 = w.at(-3) || null;
+  const b4 = w.at(-4) || null;
+  const b5 = w.at(-5) || null;
+  const b6 = w.at(-6) || null;
+
+  const pct_3  = spinpooltoken * 0.03;
+  const pct_6  = spinpooltoken * 0.06;
+  const pct_9  = spinpooltoken * 0.09;
+  const pct_12 = spinpooltoken * 0.12;
+  const pct_15 = spinpooltoken * 0.15;
+  const pct_18 = spinpooltoken * 0.18;
+
+  const allNonZero =
+    pct_3  !== 0 &&
+    pct_6  !== 0 &&
+    pct_9  !== 0 &&
+    pct_12 !== 0 &&
+    pct_15 !== 0 &&
+    pct_18 !== 0;
+
+  const pct_7 = allNonZero ? spinpooltoken * 0.07 : 0;
+
+  const spinpool30       = spinpooltoken * 0.30;
+  const newSpinpoolToken = spinpool30 + 2500;
+  const token3           = newSpinpoolToken - 2500;
+
+  return {
+    bingos: { b1, b2, b3, b4, b5, b6 },
+    pct_3,
+    pct_6,
+    pct_9,
+    pct_12,
+    pct_15,
+    pct_18,
+    pct_7,
+    spinpool30,
+    newSpinpoolToken,
+    token3
+  };
+}
+</script>
+
+</body>
+</html>
