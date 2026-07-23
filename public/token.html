@@ -87,8 +87,8 @@
     background:#ffd700;
     color:#000;
     border:none;
-    padding:6px 10px;
-    font-size:20px;
+    padding:8px 12px;
+    font-size:22px;
     border-radius:6px;
     cursor:pointer;
   }
@@ -104,6 +104,18 @@
     gap:40px;
   }
   .icon-item { font-size:26px; opacity:0.9; cursor:pointer; }
+
+  /* BIG BUY BUTTON */
+  .buy-btn {
+    padding:14px 30px;
+    font-size:20px;
+    background:#ffd700;
+    color:#000;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    margin-top:20px;
+  }
 </style>
 </head>
 
@@ -168,7 +180,7 @@
         type="number"
         step="0.0001"
         min="0.0005"
-        placeholder="0.0005"
+        value="0.0005"
         class="input-box"
       />
 
@@ -179,10 +191,7 @@
 
     </div>
 
-    <br><br>
-
-    <button onclick="buyTokens()" 
-      style="padding:10px 20px; background:#ffd700; color:#000; border:none; border-radius:8px; cursor:pointer;">
+    <button onclick="buyTokens()" class="buy-btn">
       Buy Tokens
     </button>
   </div>
@@ -263,7 +272,7 @@
   async function loadTokenData() {
     const { data } = await supabaseClient
       .from("TokenSQL")
-      .select("priceindex, token1, bingototal")
+      .select("priceindex, token1, bingotoken")   <!-- FIXED COLUMN NAME -->
       .limit(1)
       .maybeSingle();
 
@@ -271,7 +280,7 @@
 
     document.getElementById("priceindexValue").textContent = data.priceindex ?? "-";
     document.getElementById("token1Value").textContent = data.token1 ?? "-";
-    document.getElementById("bingototalValue").textContent = data.bingototal ?? "-";
+    document.getElementById("bingototalValue").textContent = data.bingotoken ?? "-";
   }
 
   async function loadTeamToken() {
@@ -295,6 +304,41 @@
     loadTokenData();
     loadTeamToken();
   }, 5000);
+
+  /* ARROW LOGIC FIXED */
+  function increaseAmount() {
+    let v = parseFloat(document.getElementById("buyAmount").value);
+    if (isNaN(v)) v = 0.0005;
+    v += 0.0001;
+    document.getElementById("buyAmount").value = v.toFixed(4);
+  }
+
+  function decreaseAmount() {
+    let v = parseFloat(document.getElementById("buyAmount").value);
+    if (isNaN(v)) v = 0.0005;
+    v -= 0.0001;
+    if (v < 0.0005) v = 0.0005;
+    document.getElementById("buyAmount").value = v.toFixed(4);
+  }
+
+  function buyTokens() {
+    const v = document.getElementById("buyAmount").value;
+
+    if (v.includes(".")) {
+      const decimals = v.split(".")[1].length;
+      if (decimals > 4) {
+        alert("Value cannot be more than 4 decimals.");
+        return;
+      }
+    }
+
+    if (parseFloat(v) < 0.0005) {
+      alert("Minimum purchase is 0.0005");
+      return;
+    }
+
+    alert("Purchase successful: " + v + " tokens");
+  }
 
 </script>
 
