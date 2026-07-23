@@ -186,11 +186,11 @@ function closePage() {
   document.getElementById("popup").style.display = "none";
 }
 
-/* ⭐ FIXED 84-HOUR CYCLE TIMER USING TRUE EASTERN TIME ⭐ */
+/* ⭐ FINAL FIX — SAME TIMER AS bingo.html ⭐ */
 function updateTimer() {
   const now = new Date();
 
-  // Convert NOW → Eastern Time
+  // Convert NOW → Eastern Time (this is the key fix)
   const nowET = new Date(
     now.toLocaleString("en-US", { timeZone: "America/New_York" })
   );
@@ -245,3 +245,4 @@ checkUser();
 
 </body>
 </html>
+
