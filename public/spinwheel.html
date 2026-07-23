@@ -3,81 +3,108 @@
 <head>
   <meta charset="UTF-8">
   <title>Spin Wheel</title>
+
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 80px; }
-    #label { font-size: 28px; margin-bottom: 10px; }
-    #countdown { font-size: 32px; font-weight: bold; }
-    #schedule { margin-top: 20px; font-size: 14px; color: #555; }
+    body { margin: 0; font-family: Arial, sans-serif; }
+
+    /* NAV BAR — same as home.html */
+    .nav {
+      display: flex;
+      background: #222;
+      padding: 12px;
+      justify-content: center;
+      gap: 40px;
+    }
+    .nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    /* PAGE LAYOUT */
+    .container {
+      text-align: center;
+      margin-top: 60px;
+    }
+    #title {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    #countdown {
+      font-size: 40px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    #schedule {
+      font-size: 14px;
+      color: #555;
+    }
   </style>
 </head>
+
 <body>
-  <div id="label">Spin Win Starts In</div>
-  <div id="countdown">Loading...</div>
-  <div id="schedule">
-    Eastern Standard Time (ET)<br>
-    Monday 8am • Thursday 8pm<br>
-    84‑hour cycle
+
+  <!-- SAME NAV BAR AS home.html -->
+  <div class="nav">
+    <a href="home.html">Home</a>
+    <a href="token.html">Token</a>
+    <a href="spinwheel.html">Spin Wheel</a>
   </div>
 
+  <div class="container">
+    <div id="title">Spin Win Starts In</div>
+    <div id="countdown">Loading...</div>
+
+    <div id="schedule">
+      Eastern Standard Time (ET)<br>
+      Monday 8am • Thursday 8pm<br>
+      84‑hour cycle
+    </div>
+  </div>
+
+  <!-- SAME TIMER SCRIPT AS home.html -->
   <script>
-    function getNextSpinDate(now) {
-      // current local time
-      const day = now.getDay();   // 0=Sun, 1=Mon, ..., 4=Thu
+    function nextSpin(now) {
+      const day = now.getDay();   // 1=Mon, 4=Thu
       const hour = now.getHours();
 
-      // helper: set a date to specific weekday + time
-      function nextWeekdayTime(targetDay, targetHour) {
+      function target(dayNum, hourNum) {
         const d = new Date(now);
-        const diff = (targetDay - day + 7) % 7;
+        const diff = (dayNum - day + 7) % 7;
         d.setDate(d.getDate() + diff);
-        d.setHours(targetHour, 0, 0, 0);
-        // if time already passed today, push to next week
-        if (diff === 0 && d <= now) {
-          d.setDate(d.getDate() + 7);
-        }
+        d.setHours(hourNum, 0, 0, 0);
+        if (diff === 0 && d <= now) d.setDate(d.getDate() + 7);
         return d;
       }
 
-      // candidate: next Monday 8am
-      const nextMon8 = nextWeekdayTime(1, 8);
-      // candidate: next Thursday 8pm (20:00)
-      const nextThu20 = nextWeekdayTime(4, 20);
+      const mon8 = target(1, 8);
+      const thu20 = target(4, 20);
 
-      // choose the earliest future spin
-      return (nextMon8 < nextThu20) ? nextMon8 : nextThu20;
+      return (mon8 < thu20) ? mon8 : thu20;
     }
 
-    function formatDiff(ms) {
-      const totalSeconds = Math.floor(ms / 1000);
-      const days = Math.floor(totalSeconds / 86400);
-      const hours = Math.floor((totalSeconds % 86400) / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-
-      return (
-        days + "d " +
-        hours.toString().padStart(2, "0") + "h " +
-        minutes.toString().padStart(2, "0") + "m " +
-        seconds.toString().padStart(2, "0") + "s"
-      );
+    function fmt(ms) {
+      const s = Math.floor(ms / 1000);
+      const d = Math.floor(s / 86400);
+      const h = Math.floor((s % 86400) / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const sec = s % 60;
+      return `${d}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(sec).padStart(2,'0')}s`;
     }
 
-    function updateCountdown() {
+    function tick() {
       const now = new Date();
-      const nextSpin = getNextSpinDate(now);
-      const diff = nextSpin - now;
+      const next = nextSpin(now);
+      const diff = next - now;
 
       const el = document.getElementById("countdown");
-      if (diff <= 0) {
-        el.textContent = "Spin Win is LIVE";
-      } else {
-        el.textContent = formatDiff(diff);
-      }
+      el.textContent = diff <= 0 ? "Spin Win is LIVE" : fmt(diff);
     }
 
-    // run immediately + every second
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
+    tick();
+    setInterval(tick, 1000);
   </script>
+
 </body>
 </html>
+
