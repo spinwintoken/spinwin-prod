@@ -20,16 +20,16 @@
   .logo-icon { font-size:60px; }
   .logo-title { font-size:28px; font-weight:bold; }
 
-  /* NEW: 50% timer + 50% icon row */
+  /* 50% timer + 50% icon row */
   .top-row {
     display:flex;
     justify-content:center;
-    align-items:stretch;     /* FIX: timer expands properly */
+    align-items:flex-start;
     gap:10px;
     width:90%;
     max-width:420px;
     margin:20px auto 0 auto;
-    min-height:180px;        /* FIX: prevents timer jamming */
+    min-height:150px;     /* FIX: prevents pointer jam */
   }
 
   .half-box {
@@ -37,14 +37,14 @@
     display:flex;
   }
 
-  /* your original countdown box (unchanged inside) */
+  /* original timer box untouched */
   .countdown-box {
     padding:20px;
     background:#111;
     border:1px solid #ffd700;
     border-radius:10px;
     width:100%;
-    height:100%;             /* FIX: full height */
+    height:100%;
     box-sizing:border-box;
   }
 
@@ -52,14 +52,14 @@
   .timer { font-size:32px; font-weight:bold; margin-top:10px; }
   .countdown-info { margin-top:10px; font-size:14px; }
 
-  /* NEW: bingo icon box */
+  /* icon box — reduced height so pointer never jams */
   .icon-box {
-    padding:20px;
+    padding:15px;
     background:#111;
     border:1px solid #ffd700;
     border-radius:10px;
     width:100%;
-    height:100%;
+    height:auto;          /* FIX: no pointer jam */
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -67,12 +67,12 @@
   }
 
   .bingo-icon {
-    font-size:60px;
+    font-size:50px;
   }
 
   .token-value {
-    margin-top:10px;
-    font-size:26px;
+    margin-top:8px;
+    font-size:24px;
     font-weight:bold;
   }
 
@@ -133,10 +133,10 @@
   <div class="logo-title">SPINWIN TOKEN</div>
 </div>
 
-<!-- NEW 50% TIMER + 50% ICON -->
+<!-- 50% TIMER + 50% ICON -->
 <div class="top-row">
 
-  <!-- LEFT 50%: your original timer box -->
+  <!-- LEFT: original timer -->
   <div class="half-box">
     <div class="countdown-box">
       <div class="countdown-title">Spin Wheel Starts In</div>
@@ -149,7 +149,7 @@
     </div>
   </div>
 
-  <!-- RIGHT 50%: bingo icon + spinpooltoken -->
+  <!-- RIGHT: icon + spinpooltoken(TokenSQL) -->
   <div class="half-box">
     <div class="icon-box">
       <div class="bingo-icon">🎯</div>
@@ -399,10 +399,12 @@ function onTimerZero() {
 }
 
 /* ----------------------------------------------------------
-   TokenSQL display (placeholder)
+   TokenSQL display (replace with real DB value)
 ---------------------------------------------------------- */
 
-let spinpooltokenValue = 12345; // replace with real TokenSQL value
+let spinpooltokenValue = 0;  // default
+
+// TODO: connect to Supabase TokenSQL here
 document.getElementById("spinpooltoken").textContent = spinpooltokenValue;
 
 /* ----------------------------------------------------------
@@ -458,3 +460,5 @@ function computeBingoPayout(crypto_wallet_id, spinpooltoken) {
 
 </body>
 </html>
+
+
