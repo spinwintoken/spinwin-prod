@@ -122,6 +122,8 @@ const radius = 160;
 function drawWheel(rotation=0) {
   const slice = (2 * Math.PI) / wheelSlots.length;
 
+  ctx.clearRect(0, 0, canvas.width, canvas.height); /* FIX: remove debug text */
+
   for (let i = 0; i < wheelSlots.length; i++) {
     const start = i * slice + rotation;
     const end = start + slice;
@@ -325,10 +327,4 @@ function onTimerZero() {
 
 </body>
 </html>
-
-
-function drawWheel(rotation=0) {
-  const slice = (2 * Math.PI) / wheelSlots.length;
-
-  for (let i =
 
