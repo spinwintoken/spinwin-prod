@@ -24,12 +24,11 @@
   .top-row {
     display:flex;
     justify-content:center;
-    align-items:flex-start;
+    align-items:stretch;   /* FIX: same height */
     gap:10px;
     width:90%;
     max-width:420px;
     margin:20px auto 0 auto;
-    min-height:150px;     /* FIX: prevents pointer jam */
   }
 
   .half-box {
@@ -37,7 +36,7 @@
     display:flex;
   }
 
-  /* original timer box untouched */
+  /* original timer box */
   .countdown-box {
     padding:20px;
     background:#111;
@@ -52,14 +51,15 @@
   .timer { font-size:32px; font-weight:bold; margin-top:10px; }
   .countdown-info { margin-top:10px; font-size:14px; }
 
-  /* icon box — reduced height so pointer never jams */
+  /* icon box same height as timer */
   .icon-box {
-    padding:15px;
+    padding:20px;
     background:#111;
     border:1px solid #ffd700;
     border-radius:10px;
     width:100%;
-    height:auto;          /* FIX: no pointer jam */
+    height:100%;
+    box-sizing:border-box;
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -71,8 +71,8 @@
   }
 
   .token-value {
-    margin-top:8px;
-    font-size:24px;
+    margin-top:10px;
+    font-size:26px;
     font-weight:bold;
   }
 
