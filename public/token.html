@@ -81,7 +81,7 @@
   }
   .icon-item { font-size:26px; opacity:0.9; cursor:pointer; }
 
-  /* REMOVE ARROWS INSIDE INPUT BOX */
+  /* REMOVE SMALL ARROWS INSIDE INPUT BOX */
   .input-box {
     padding:10px;
     width:140px;
@@ -96,6 +96,17 @@
   .input-box::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
+  }
+
+  /* BIG ARROWS OUTSIDE BOX */
+  .arrow-btn {
+    background:#ffd700;
+    color:#000;
+    border:none;
+    padding:6px 10px;
+    font-size:20px;
+    border-radius:6px;
+    cursor:pointer;
   }
 </style>
 </head>
@@ -154,17 +165,25 @@
   <div style="margin-top:20px;">
     <label style="font-size:16px;">Enter Token Amount</label><br><br>
 
-    <input 
-      id="buyAmount"
-      type="number"
-      step="0.0001"
-      min="0.0005"
-      placeholder="0.0005"
-      class="input-box"
-    />
+    <div style="display:flex; justify-content:center; align-items:center; gap:20px;">
+      <button class="arrow-btn" onclick="increaseAmount()">▲</button>
+
+      <input 
+        id="buyAmount"
+        type="number"
+        step="0.0001"
+        min="0.0005"
+        placeholder="0.0005"
+        class="input-box"
+      />
+
+      <button class="arrow-btn" onclick="decreaseAmount()">▼</button>
+    </div>
+
+    <br><br>
 
     <button onclick="buyTokens()" 
-      style="margin-top:20px; padding:10px 20px; background:#ffd700; color:#000; border:none; border-radius:8px; cursor:pointer;">
+      style="padding:10px 20px; background:#ffd700; color:#000; border:none; border-radius:8px; cursor:pointer;">
       Buy Tokens
     </button>
   </div>
@@ -230,19 +249,21 @@
 <!-- SUPABASE -->
 <script src="https://unpkg.com/@supabase/supabase-js@2.47.1/dist/umd/supabase.min.js"></script>
 <script>
-  const supabaseClient = supabase.createClient(
+
+  /* ⭐ SAME AS HOME.HTML — THIS FIXES YOUR PAGE ⭐ */
+  const supabase = supabase.createClient(
     "https://zejhbfuuherovlxklrgy.supabase.co",
     "sb_publishable_71MQZaR6QqWn1mH39fyoJQ_-sU8fmSQ"
   );
 
   async function checkUser() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) location.href = "signin.html";
     return user;
   }
 
   async function loadTokenData() {
-    const { data } = await supabaseClient
+    const { data } = await supabase
       .from("TokenSQL")
       .select("*")
       .limit(1)
@@ -252,13 +273,12 @@
 
     document.getElementById("priceindexValue").textContent = data.priceindex ?? "-";
     document.getElementById("token1Value").textContent = data.token1 ?? "-";
-    document.getElementById("token2Value").textContent = "★★★★★";
-    document.getElementById("token3Value").textContent = data.tokenbingo ?? "BINGO!";
+    document.getElementById("token3Value").textContent = data.tokenbingo ?? "-";
   }
 
   async function loadTeamToken() {
     const user = await checkUser();
-    const { data } = await supabaseClient
+    const { data } = await supabase
       .from("UsersSQL")
       .select("teamtoken")
       .eq("userid", user.id)
@@ -272,6 +292,19 @@
   loadTeamToken();
 
   /* PURCHASE LOGIC */
+  function increaseAmount() {
+    let v = parseFloat(document.getElementById("buyAmount").value || "0.0005");
+    v += 0.0001;
+    document.getElementById("buyAmount").value = v.toFixed(4);
+  }
+
+  function decreaseAmount() {
+    let v = parseFloat(document.getElementById("buyAmount").value || "0.0005");
+    v -= 0.0001;
+    if (v < 0.0005) v = 0.0005;
+    document.getElementById("buyAmount").value = v.toFixed(4);
+  }
+
   function buyTokens() {
     const v = document.getElementById("buyAmount").value;
 
@@ -294,4 +327,5 @@
 
 </body>
 </html>
+
 
