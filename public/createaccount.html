@@ -148,7 +148,7 @@
 
       const referralCode = generateReferralCode();
 
-      /* ⭐ UPDATED INSERT — REMOVED uid, uses auto id ⭐ */
+      /* ⭐ FIXED INSERT — REMOVED uid ⭐ */
       const { error: insertError } = await client
         .from("UsersSQL")
         .insert({
@@ -181,4 +181,5 @@
   </script>
 </body>
 </html>
+
 
