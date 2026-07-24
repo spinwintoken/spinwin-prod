@@ -96,7 +96,7 @@
 
   <p><strong>Team Members:</strong> <span id="teamMembers"></span></p>
   <p><strong>Team Tokens Purchased:</strong> <span id="teamTokenPurchased"></span></p>
-  <p><strong>Token Available:</strong> <span id="teamTokenAvailable"></span></p>
+  <p><strong>Token Available:</strong> <span id="youpurchased"></span></p>
   <p><strong>SpinWin Token:</strong> <span id="spinWinToken"></span></p>
 </div>
 
@@ -172,7 +172,7 @@ async function loadProfile(email) {
   document.getElementById("teamMembers").textContent = teamMemberValue;
 
   document.getElementById("teamTokenPurchased").textContent = userRow.teamtokenpurchased;
-  document.getElementById("teamTokenAvailable").textContent = userRow.teamtokenavailable;
+  document.getElementById("youpurchased").textContent = userRow.teamtokenavailable;
   document.getElementById("spinWinToken").textContent = userRow.spinwintoken;
 }
 
