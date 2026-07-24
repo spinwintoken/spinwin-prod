@@ -139,10 +139,6 @@
   <div class="logo-title">SPINWIN TOKEN</div>
 </div>
 
-<!-- ALWAYS VISIBLE BINGO + DATE -->
-<div id="bingo-display">BINGO:</div>
-<div id="bingo-date">Date:</div>
-
 <!-- TIMER + TOKEN -->
 <div class="top-row">
 
@@ -178,6 +174,10 @@
 
 <!-- RESULTS -->
 <div id="spin-results">-- -- -- -- -- --</div>
+
+<!-- ⭐ BINGO + DATE EXACTLY WHERE YOU WANT THEM -->
+<div id="bingo-display">BINGO:</div>
+<div id="bingo-date">Date:</div>
 
 <!-- NAV -->
 <div class="icon-row">
@@ -237,7 +237,7 @@ function drawWheel(rotation=0) {
 
 drawWheel();
 
-/* FLASHING GLOW */
+/* FLASH */
 function flashSlice(index) {
   const slice = (2 * Math.PI) / wheelSlots.length;
   const start = index * slice;
@@ -266,7 +266,7 @@ function flashSlice(index) {
   }, 100);
 }
 
-/* SPIN ONE (NO REPEAT) */
+/* SPIN ONE */
 function spinOne() {
   if (spinPool.length === 0) spinPool = [...wheelSlots];
   const index = Math.floor(Math.random() * spinPool.length);
@@ -318,7 +318,7 @@ async function runSpinWheel() {
   if (spinning) return;
   spinning = true;
 
-  // schedule Date update at T = 40s after timer zero
+  // T = 40s → update Date
   setTimeout(() => {
     const dateText = new Date().toLocaleString("en-US", {
       timeZone: "America/New_York",
@@ -340,7 +340,7 @@ async function runSpinWheel() {
   results = [];
   updateResultsDisplay();
 
-  // keep label; numbers will be added after spins
+  // keep label
   document.getElementById("bingo-display").textContent = "BINGO:";
 
   for (let i = 0; i < 6; i++) {
@@ -351,7 +351,7 @@ async function runSpinWheel() {
     updateResultsDisplay();
   }
 
-  // show BINGO + numbers
+  // show bingo numbers
   document.getElementById("bingo-display").textContent =
     "BINGO: " + results.join("");
 
@@ -400,7 +400,7 @@ function updateTimer() {
 
   const diff = nextEventET - nowET;
 
-  // ⭐ ONLY HERE: 20 minutes before next spin → clear numbers, keep labels
+  // ⭐ ONLY HERE: clear numbers + date text
   if (diff <= 1200000) {
     document.getElementById("bingo-display").textContent = "BINGO:";
     document.getElementById("bingo-date").textContent = "Date:";
@@ -431,56 +431,10 @@ function onTimerZero() {
   }, 20000);
 }
 
-/* TOKEN VALUE (placeholder) */
+/* TOKEN VALUE */
 let spinpooltokenValue = 0;
 document.getElementById("spinpooltoken").textContent = spinpooltokenValue;
 
-/* BingoSQL logic (unchanged) */
-function computeBingoPayout(crypto_wallet_id, spinpooltoken) {
-  const w = crypto_wallet_id.toString();
-
-  const b1 = w.at(-1)  || null;
-  const b2 = w.at(-2) || null;
-  const b3 = w.at(-3) || null;
-  const b4 = w.at(-4) || null;
-  const b5 = w.at(-5) || null;
-  const b6 = w.at(-6) || null;
-
-  const pct_3  = spinpooltoken * 0.03;
-  const pct_6  = spinpooltoken * 0.06;
-  const pct_9  = spinpooltoken * 0.09;
-  const pct_12 = spinpooltoken * 0.12;
-  const pct_15 = spinpooltoken * 0.15;
-  const pct_18 = spinpooltoken * 0.18;
-
-  const allNonZero =
-    pct_3  !== 0 &&
-    pct_6  !== 0 &&
-    pct_9  !== 0 &&
-    pct_12 !== 0 &&
-    pct_15 !== 0 &&
-    pct_18 !== 0;
-
-  const pct_7 = allNonZero ? spinpooltoken * 0.07 : 0;
-
-  const spinpool30       = spinpooltoken * 0.30;
-  const newSpinpoolToken = spinpool30 + 2500;
-  const token3           = newSpinpoolToken - 2500;
-
-  return {
-    bingos: { b1, b2, b3, b4, b5, b6 },
-    pct_3,
-    pct_6,
-    pct_9,
-    pct_12,
-    pct_15,
-    pct_18,
-    pct_7,
-    spinpool30,
-    newSpinpoolToken,
-    token3
-  };
-}
 </script>
 
 </body>
