@@ -104,14 +104,13 @@
     text-align:center;
   }
 
-  /* ⭐ Date moved closer to center */
   #bingo-date {
     margin-top:10px;
     font-size:20px;
     color:#ffd700;
     width:100%;
     text-align:left;
-    padding-left:120px; /* adjust this to move Date closer */
+    padding-left:120px;
   }
 
   .icon-row {
@@ -134,31 +133,23 @@
 
 <body>
 
-<!-- SOUND EFFECTS -->
 <audio id="spinSound" src="spin.mp3"></audio>
 <audio id="winSound" src="win.mp3"></audio>
 
-<!-- LOGO -->
 <div class="logo-row">
   <div class="logo-icon">🎡</div>
   <div class="logo-title">SPINWIN TOKEN</div>
 </div>
 
-<!-- TIMER + TOKEN -->
 <div class="top-row">
-
-  <!-- TIMER -->
   <div class="half-box">
     <div class="countdown-box">
       <div class="countdown-title">Next Spin Starts In</div>
       <div id="timer" class="timer">Loading...</div>
-      <div class="countdown-info">
-        Test Mode: 30‑minute cycle
-      </div>
+      <div class="countdown-info">Test Mode: 30‑minute cycle</div>
     </div>
   </div>
 
-  <!-- TOKEN -->
   <div class="half-box">
     <div class="icon-box">
       <div class="bingo-icon">🎯</div>
@@ -166,23 +157,17 @@
       <div class="token-small">Token</div>
     </div>
   </div>
-
 </div>
 
-<!-- POINTER -->
 <div class="pointer"></div>
 
-<!-- WHEEL -->
 <canvas id="wheel" width="320" height="320"></canvas>
 
-<!-- RESULTS -->
 <div id="spin-results">-- -- -- -- -- --</div>
 
-<!-- ⭐ BINGO + DATE EXACTLY WHERE YOU WANT THEM -->
 <div id="bingo-display">BINGO:</div>
 <div id="bingo-date">Date:</div>
 
-<!-- NAV -->
 <div class="icon-row">
   <div class="icon-item" onclick="location.href='home.html'">🏠</div>
   <div class="icon-item" onclick="location.href='token.html'">🏅</div>
@@ -269,7 +254,7 @@ function flashSlice(index) {
   }, 100);
 }
 
-/* SPIN ONE */
+/* SPIN ONE — chooses the target slice */
 function spinOne() {
   if (spinPool.length === 0) spinPool = [...wheelSlots];
   const index = Math.floor(Math.random() * spinPool.length);
@@ -278,26 +263,31 @@ function spinOne() {
   return value;
 }
 
-/* ANIMATED SPIN */
+/* ⭐ ANIMATE SPIN — 3 seconds, 3 full rotations, land on target */
 function animateSpin(targetValue) {
   return new Promise(resolve => {
-    let angle = 0;
-    let speed = 0.35;
 
     const targetIndex = wheelSlots.indexOf(targetValue);
     const slice = (2 * Math.PI) / wheelSlots.length;
-    const targetAngle = (2 * Math.PI * 4) + (slice * targetIndex);
+
+    const fullRotations = 3 * 2 * Math.PI; // 3 full circles
+    const targetAngle = fullRotations + (slice * targetIndex);
+
+    const duration = 3000; // 3 seconds
+    const startTime = performance.now();
 
     document.getElementById("spinSound").play();
 
-    function frame() {
-      angle += speed;
-      speed *= 0.985;
+    function frame(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // ⭐ Constant speed (Option A)
+      const angle = targetAngle * progress;
 
       drawWheel(angle);
 
-      if (angle >= targetAngle) {
-        drawWheel(angle);
+      if (progress >= 1) {
         document.getElementById("winSound").play();
         flashSlice(targetIndex);
         resolve();
@@ -306,7 +296,7 @@ function animateSpin(targetValue) {
       }
     }
 
-    frame();
+    requestAnimationFrame(frame);
   });
 }
 
@@ -316,65 +306,43 @@ function updateResultsDisplay() {
     results.join("   ");
 }
 
-/* RUN 6 SPINS */
+/* ⭐ RUN 6 SPINS — no waiting, each spin lasts 3 sec */
 async function runSpinWheel() {
   if (spinning) return;
   spinning = true;
-
-  // T = 40s → update Date
-  setTimeout(() => {
-    const dateText = new Date().toLocaleString("en-US", {
-      timeZone: "America/New_York",
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true
-    }).replace(",", " •") + " ET";
-
-    document.getElementById("bingo-date").textContent =
-      "Date: " + dateText;
-
-    document.getElementById("spinpooltoken").textContent = spinpooltokenValue;
-  }, 40000);
+  pauseTimer = true;
 
   results = [];
   updateResultsDisplay();
 
-  // keep label
   document.getElementById("bingo-display").textContent = "BINGO:";
 
   for (let i = 0; i < 6; i++) {
-    await new Promise(r => setTimeout(r, 3000));
     const value = spinOne();
-    await animateSpin(value);
+    await animateSpin(value);   // ⭐ 3 sec spin
     results.unshift(value);
     updateResultsDisplay();
   }
 
-  // show bingo numbers
   document.getElementById("bingo-display").textContent =
     "BINGO: " + results.join("");
 
   spinning = false;
+  pauseTimer = false;
 }
 
-/* ⭐ TEST MODE: 30‑MINUTE TIMER */
+/* ⭐ TIMER */
 function updateTimer() {
   if (pauseTimer) return;
 
   const now = new Date();
 
-  // first run → create target time 30 minutes ahead
   if (!window.testTargetTime) {
     window.testTargetTime = new Date(now.getTime() + (30 * 60 * 1000));
   }
 
   const diff = window.testTargetTime - now;
 
-  // ⭐ Clear BINGO numbers + Date text at T = 20 minutes
   if (diff <= 20 * 60 * 1000) {
     document.getElementById("bingo-display").textContent = "BINGO:";
     document.getElementById("bingo-date").textContent = "Date:";
@@ -386,27 +354,14 @@ function updateTimer() {
   document.getElementById("timer").textContent =
     `${minutes}m ${seconds}s`;
 
-  // ⭐ When countdown hits zero → spin + restart 30-minute cycle
   if (diff <= 1000) {
-    onTimerZero();
+    runSpinWheel();
     window.testTargetTime = new Date(new Date().getTime() + (30 * 60 * 1000));
   }
 }
 
 setInterval(updateTimer, 1000);
 updateTimer();
-
-/* TIMER ZERO → SPIN + PAUSE */
-function onTimerZero() {
-  pauseTimer = true;
-
-  runSpinWheel();
-
-  setTimeout(() => {
-    pauseTimer = false;
-    updateTimer();
-  }, 20000);
-}
 
 /* TOKEN VALUE */
 let spinpooltokenValue = 0;
@@ -416,3 +371,4 @@ document.getElementById("spinpooltoken").textContent = spinpooltokenValue;
 
 </body>
 </html>
+
