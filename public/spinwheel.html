@@ -139,6 +139,10 @@
   <div class="logo-title">SPINWIN TOKEN</div>
 </div>
 
+<!-- ALWAYS VISIBLE BINGO + DATE -->
+<div id="bingo-display">BINGO:</div>
+<div id="bingo-date">Date:</div>
+
 <!-- TIMER + TOKEN -->
 <div class="top-row">
 
@@ -174,10 +178,6 @@
 
 <!-- RESULTS -->
 <div id="spin-results">-- -- -- -- -- --</div>
-
-<!-- BINGO + DATE -->
-<div id="bingo-display"></div>
-<div id="bingo-date"></div>
 
 <!-- NAV -->
 <div class="icon-row">
@@ -337,7 +337,9 @@ async function runSpinWheel() {
 
   results = [];
   updateResultsDisplay();
-  document.getElementById("bingo-display").textContent = "";
+
+  /* CLEAR BINGO BEFORE NEW SPINS */
+  document.getElementById("bingo-display").textContent = "BINGO:";
 
   for (let i = 0; i < 6; i++) {
     await new Promise(r => setTimeout(r, 3000)); // ⭐ 3 sec per spin
@@ -399,8 +401,8 @@ function updateTimer() {
 
   /* ⭐ CLEAR 20 MINUTES BEFORE NEXT SPIN */
   if (diff <= 1200000) {
-    document.getElementById("bingo-display").textContent = "";
-    document.getElementById("bingo-date").textContent = "";
+    document.getElementById("bingo-display").textContent = "BINGO:";
+    document.getElementById("bingo-date").textContent = "Date:";
   }
 
   const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -482,4 +484,5 @@ function computeBingoPayout(crypto_wallet_id, spinpooltoken) {
 
 </body>
 </html>
+
 
