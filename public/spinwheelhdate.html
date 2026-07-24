@@ -237,7 +237,7 @@ function drawWheel(rotation=0) {
 
 drawWheel();
 
-/* FLASH */
+/* FLASHING GLOW */
 function flashSlice(index) {
   const slice = (2 * Math.PI) / wheelSlots.length;
   const start = index * slice;
@@ -266,7 +266,7 @@ function flashSlice(index) {
   }, 100);
 }
 
-/* SPIN ONE */
+/* SPIN ONE (NO REPEAT) */
 function spinOne() {
   if (spinPool.length === 0) spinPool = [...wheelSlots];
   const index = Math.floor(Math.random() * spinPool.length);
@@ -318,19 +318,21 @@ async function runSpinWheel() {
   if (spinning) return;
   spinning = true;
 
-  /* ⭐ DATE + SPINPOOLTOKEN REFRESH AT T = 40 SEC */
+  // schedule Date update at T = 40s after timer zero
   setTimeout(() => {
+    const dateText = new Date().toLocaleString("en-US", {
+      timeZone: "America/New_York",
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    }).replace(",", " •") + " ET";
+
     document.getElementById("bingo-date").textContent =
-      "Date: " + new Date().toLocaleString("en-US", {
-        timeZone: "America/New_York",
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true
-      }).replace(",", " •") + " ET";
+      "Date: " + dateText;
 
     document.getElementById("spinpooltoken").textContent = spinpooltokenValue;
   }, 40000);
@@ -338,19 +340,18 @@ async function runSpinWheel() {
   results = [];
   updateResultsDisplay();
 
-  /* CLEAR BINGO BEFORE NEW SPINS */
+  // keep label; numbers will be added after spins
   document.getElementById("bingo-display").textContent = "BINGO:";
 
   for (let i = 0; i < 6; i++) {
-    await new Promise(r => setTimeout(r, 3000)); // ⭐ 3 sec per spin
-
+    await new Promise(r => setTimeout(r, 3000));
     const value = spinOne();
     await animateSpin(value);
-
     results.unshift(value);
     updateResultsDisplay();
   }
 
+  // show BINGO + numbers
   document.getElementById("bingo-display").textContent =
     "BINGO: " + results.join("");
 
@@ -399,7 +400,7 @@ function updateTimer() {
 
   const diff = nextEventET - nowET;
 
-  /* ⭐ CLEAR 20 MINUTES BEFORE NEXT SPIN */
+  // ⭐ ONLY HERE: 20 minutes before next spin → clear numbers, keep labels
   if (diff <= 1200000) {
     document.getElementById("bingo-display").textContent = "BINGO:";
     document.getElementById("bingo-date").textContent = "Date:";
@@ -430,11 +431,11 @@ function onTimerZero() {
   }, 20000);
 }
 
-/* TOKEN VALUE */
+/* TOKEN VALUE (placeholder) */
 let spinpooltokenValue = 0;
 document.getElementById("spinpooltoken").textContent = spinpooltokenValue;
 
-/* BINGO PAYOUT (unchanged) */
+/* BingoSQL logic (unchanged) */
 function computeBingoPayout(crypto_wallet_id, spinpooltoken) {
   const w = crypto_wallet_id.toString();
 
@@ -484,5 +485,6 @@ function computeBingoPayout(crypto_wallet_id, spinpooltoken) {
 
 </body>
 </html>
+
 
 
