@@ -146,14 +146,12 @@
         return;
       }
 
-      const uid = data.user.id;
       const referralCode = generateReferralCode();
 
-      /* ⭐ CLEANED INSERT — ONLY REMOVED INVALID COLUMNS ⭐ */
+      /* ⭐ UPDATED INSERT — REMOVED uid, uses auto id ⭐ */
       const { error: insertError } = await client
         .from("UsersSQL")
         .insert({
-          uid,
           email,
           indicator: 1,
           referralcode: referralCode,
@@ -183,3 +181,4 @@
   </script>
 </body>
 </html>
+
