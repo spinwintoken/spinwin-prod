@@ -20,7 +20,6 @@
     }
 
     grecaptcha.ready(refreshRecaptchaToken);
-    setInterval(refreshRecaptchaToken, 120000);
   </script>
 
   <style>
@@ -79,7 +78,7 @@
 
     const urlParams = new URLSearchParams(window.location.search);
 
-    /* ⭐ FIXED REFERRAL LOGIC ⭐ */
+    /* ⭐ REFERRAL LOGIC ⭐ */
     const refRaw = urlParams.get("invite") || "SPINROOT";
     const referredBy = refRaw.substring(0, 8);
 
@@ -141,14 +140,14 @@
       });
 
       if (error) {
-        statusEl.textContent = "Signup error: " + error.message;
+        statusEl.textContent = "Signup error: " + JSON.stringify(error);
         statusEl.classList.add("error");
         return;
       }
 
       const referralCode = generateReferralCode();
 
-      /* ⭐ FIXED INSERT — REMOVED uid ⭐ */
+      /* ⭐ FIXED INSERT — includes youpurchased ⭐ */
       const { error: insertError } = await client
         .from("UsersSQL")
         .insert({
@@ -181,5 +180,6 @@
   </script>
 </body>
 </html>
+
 
 
